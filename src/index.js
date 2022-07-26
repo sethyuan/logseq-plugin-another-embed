@@ -41,12 +41,12 @@ async function main() {
   const observer = new MutationObserver(async (mutationList) => {
     for (const mutation of mutationList) {
       const addedNode = mutation.addedNodes[0]
-
-      // It's no element so skip it.
-      if (!addedNode?.querySelector) continue
+      if (addedNode && !addedNode.querySelector) continue
 
       const target = mutation.target
-      const embeds = addedNode.querySelectorAll(`span[data-ref=".embed-nodot"]`)
+      const embeds = addedNode?.querySelectorAll(
+        `span[data-ref=".embed-nodot"]`,
+      )
 
       if (embeds?.length > 0) {
         processEmbedNoDot(embeds)
