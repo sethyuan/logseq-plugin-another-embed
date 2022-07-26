@@ -1,0 +1,24 @@
+{
+  "name": "logseq-plugin-another-embed",
+  "version": "0.1.0",
+  "main": "dist/index.html",
+  "logseq": {
+    "id": "_sethyuan-logseq-another-embed",
+    "icon": "./icon.png"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@logseq/libs": "0.0.6"
+  },
+  "devDependencies": {
+    "@rollup/plugin-html": "^0.2.4",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@swc/core": "^1.2.218",
+    "rollup": "^2.77.1",
+    "rollup-plugin-swc3": "^0.3.0"
+  }
+}
