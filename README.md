@@ -1,8 +1,8 @@
 # logseq-plugin-another-embed
 
-本插件提供了一种不展示嵌入块/页根的嵌入方式。
+本插件提供了两种不一样的嵌入块/页的方式。
 
-This plugin provides a way to embed blocks/pages without displaying the root block, unlike the standard embed.
+This plugin provides 2 extra ways to embed blocks/pages.
 
 ## 使用展示 (Usage)
 
