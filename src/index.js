@@ -22,9 +22,17 @@ async function main() {
     span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container > .block-children {
       border-left: 0 !important;
     }
+    span[data-ref=".embed"] + .embed-page,
     span[data-ref=".embed-children"] + .embed-page {
       padding-left: 0 !important;
       padding-right: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    span[data-ref=".embed"] + .embed-page {
+      padding-left: 29px !important;
     }
   `)
 
