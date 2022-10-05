@@ -48,17 +48,17 @@ async function main() {
 
   const observer = new MutationObserver(async (mutationList) => {
     for (const mutation of mutationList) {
-      const addedNode = mutation.addedNodes[0]
-      if (addedNode && !addedNode.querySelector) continue
-
       const target = mutation.target
-      const embeds = addedNode?.querySelectorAll(
+
+      const addedNode = mutation.addedNodes[0]
+      if (!addedNode || !addedNode.querySelectorAll) continue
+
+      const embeds = addedNode.querySelectorAll(
         `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
       )
 
       if (embeds?.length > 0) {
         processEmbeds(embeds)
-        break
       } else if (target.classList.contains("editor-wrapper")) {
         if (
           mutation.removedNodes[0]?.querySelector(
@@ -68,7 +68,6 @@ async function main() {
           if (target.previousElementSibling) {
             target.previousElementSibling.style.display = ""
           }
-          break
         }
       }
     }
