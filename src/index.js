@@ -50,6 +50,16 @@ async function main() {
     for (const mutation of mutationList) {
       const target = mutation.target
 
+      if (
+        target.classList.contains("editor-wrapper") &&
+        mutation.removedNodes?.[0]?.querySelector(
+          `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
+        ) &&
+        target.previousElementSibling
+      ) {
+        target.previousElementSibling.style.display = ""
+      }
+
       const addedNode = mutation.addedNodes[0]
       if (!addedNode || !addedNode.querySelectorAll) continue
 
@@ -59,16 +69,6 @@ async function main() {
 
       if (embeds?.length > 0) {
         processEmbeds(embeds)
-      } else if (target.classList.contains("editor-wrapper")) {
-        if (
-          mutation.removedNodes[0]?.querySelector(
-            `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
-          )
-        ) {
-          if (target.previousElementSibling) {
-            target.previousElementSibling.style.display = ""
-          }
-        }
       }
     }
   })

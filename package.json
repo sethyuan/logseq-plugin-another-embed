@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-another-embed",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-another-embed",
