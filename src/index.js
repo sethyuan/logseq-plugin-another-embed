@@ -22,6 +22,9 @@ async function main() {
     span[data-ref=".embed-children"] + .embed-page > .embed-header {
       display: none !important;
     }
+    span[data-ref=".embed-children"] + .embed-page > .blocks-container > div > div > .pre-block {
+      display: none !important;
+    }
     span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container {
       margin-left: -12px !important;
     }
