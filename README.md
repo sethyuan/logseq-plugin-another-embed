@@ -10,6 +10,8 @@ The plugin relies heavily on Logseq's DOM structure, so it is version sensitive.
 
 ## 使用展示 (Usage)
 
+https://user-images.githubusercontent.com/3410293/202061912-7a1495ba-09af-4657-9442-c29d6d5abb55.mp4
+
 ## 自定义样式 (Style Customization)
 
 主题开发者可通过设置 `--kef-another-embed-handle-color` CSS 变量来控制嵌入块控制条的颜色。例如：
