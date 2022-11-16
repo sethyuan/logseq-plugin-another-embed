@@ -1,7 +1,13 @@
 import "@logseq/libs"
 
 async function main() {
+  const rootStyles = parent.getComputedStyle(parent.document.documentElement)
   logseq.provideStyle(`
+    ::after {
+      --kef-another-embed-handle-color: ${rootStyles.getPropertyValue(
+        "--ls-active-secondary-color",
+      )};
+    }
     span[data-ref=".embed"] {
       display: none !important;
     }
@@ -24,6 +30,7 @@ async function main() {
     }
     span[data-ref=".embed"] + .embed-page,
     span[data-ref=".embed-children"] + .embed-page {
+      position: relative;
       padding-left: 0 !important;
       padding-right: 0 !important;
       padding-top: 0 !important;
@@ -34,7 +41,28 @@ async function main() {
     span[data-ref=".embed"] + .embed-page {
       padding-left: 29px !important;
     }
+    span[data-ref=".embed"] + .embed-block,
+    span[data-ref=".embed-children"] + .embed-block {
+      position: relative;
+    }
+    span[data-ref=".embed"] + .embed-block:hover::after,
+    span[data-ref=".embed-children"] + .embed-block:hover::after,
+    span[data-ref=".embed"] + .embed-page:hover::after,
+    span[data-ref=".embed-children"] + .embed-page:hover::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: -7px;
+      width: 14px;
+      height: calc(100% - 10px - 10px);
+      background: var(--kef-another-embed-handle-color);
+      cursor: pointer;
+      z-index: 2;
+    }
   `)
+
+  const appContainer = parent.document.getElementById("app-container")
+  appContainer.addEventListener("click", onClick)
 
   logseq.Editor.registerSlashCommand("Alternative embed", async () => {
     await logseq.Editor.insertAtEditingCursor(`[[.embed]]{{embed }}`)
@@ -80,6 +108,7 @@ async function main() {
 
   logseq.beforeunload(() => {
     observer.disconnect()
+    appContainer.removeEventListener("click", onClick)
   })
 
   processEmbeds(
@@ -107,6 +136,25 @@ function cursorBack(spaces) {
   const input = parent.document.activeElement
   const pos = input.selectionStart - spaces
   input.setSelectionRange(pos, pos)
+}
+
+function onClick(e) {
+  if (
+    (e.target.classList.contains("embed-page") ||
+      e.target.classList.contains("embed-block")) &&
+    e.offsetX >= -7 &&
+    e.offsetX <= 7 &&
+    e.offsetY >= 10 &&
+    e.offsetY <= e.target.clientHeight - 10
+  ) {
+    e.preventDefault()
+    const blockContentWrapper = e.target.closest(".block-content-wrapper")
+    if (blockContentWrapper.previousElementSibling.style.display) {
+      blockContentWrapper.previousElementSibling.style.display = ""
+    } else {
+      blockContentWrapper.previousElementSibling.style.display = "none"
+    }
+  }
 }
 
 logseq.ready(main).catch(console.error)
