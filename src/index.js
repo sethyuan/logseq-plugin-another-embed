@@ -1,6 +1,10 @@
 import "@logseq/libs"
+import { setup, t } from "logseq-l10n"
+import zhCN from "./translations/zh-CN.json"
 
 async function main() {
+  await setup({ builtinTranslations: { "zh-CN": zhCN } })
+
   const rootStyles = parent.getComputedStyle(parent.document.documentElement)
   logseq.provideStyle(`
     ::after {
@@ -84,7 +88,9 @@ async function main() {
       if (
         target.classList.contains("editor-wrapper") &&
         mutation.removedNodes?.[0]?.querySelector(
-          `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
+          logseq.settings?.globalEmbed
+            ? `.embed-page,.embed-block`
+            : `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
         ) &&
         target.previousElementSibling
       ) {
@@ -95,7 +101,9 @@ async function main() {
       if (!addedNode || !addedNode.querySelectorAll) continue
 
       const embeds = addedNode.querySelectorAll(
-        `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
+        logseq.settings?.globalEmbed
+          ? `.embed-page,.embed-block`
+          : `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
       )
 
       if (embeds?.length > 0) {
@@ -109,18 +117,78 @@ async function main() {
     childList: true,
   })
 
-  logseq.beforeunload(() => {
-    observer.disconnect()
-    appContainer.removeEventListener("click", onClick)
-  })
-
   processEmbeds(
     parent.document.querySelectorAll(
       `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
     ),
   )
 
+  logseq.useSettingsSchema([
+    {
+      key: "globalEmbed",
+      type: "boolean",
+      default: false,
+      description: t("Enable global alternative embed."),
+    },
+  ])
+
+  const settingsOff = logseq.onSettingsChanged(injectGlobalStyles)
+
+  logseq.beforeunload(() => {
+    settingsOff()
+    observer.disconnect()
+    appContainer.removeEventListener("click", onClick)
+  })
+
   console.log("#another-embed loaded")
+}
+
+function injectGlobalStyles() {
+  if (logseq.settings?.globalEmbed) {
+    logseq.provideStyle({
+      key: "kef-ae-global",
+      style: `
+        .embed-block > .px-3 {
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+        }
+        .embed-page {
+          position: relative;
+          padding-left: 0 !important;
+          padding-right: 0 !important;
+          padding-top: 0 !important;
+          padding-bottom: 0 !important;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+        }
+        .embed-page {
+          padding-left: 29px !important;
+        }
+        .embed-block {
+          position: relative;
+        }
+        .embed-block:hover::after,
+        .embed-page:hover::after {
+          content: "";
+          position: absolute;
+          top: 10px;
+          left: -7px;
+          width: 14px;
+          height: calc(100% - 10px - 10px);
+          background: var(--kef-another-embed-handle-color);
+          cursor: pointer;
+          z-index: 2;
+        }
+      `,
+    })
+
+    processEmbeds(parent.document.querySelectorAll(`.embed-page,.embed-block`))
+  } else {
+    reverseEmbedsProcessing(
+      parent.document.querySelectorAll(`.embed-page,.embed-block`),
+    )
+    logseq.provideStyle({ key: "kef-ae-global", style: "/**/" })
+  }
 }
 
 function processEmbeds(embeds) {
@@ -131,6 +199,15 @@ function processEmbeds(embeds) {
       if (blockContentWrapper.previousElementSibling) {
         blockContentWrapper.previousElementSibling.style.display = "none"
       }
+    }
+  }
+}
+
+function reverseEmbedsProcessing(embeds) {
+  for (const embed of embeds) {
+    const blockContentWrapper = embed.closest(".block-content-wrapper")
+    if (blockContentWrapper?.previousElementSibling) {
+      blockContentWrapper.previousElementSibling.style.display = ""
     }
   }
 }
