@@ -30,7 +30,7 @@ async function main() {
       display: none !important;
     }
     span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container {
-      margin-left: -12px !important;
+      margin-left: 0 !important;
     }
     span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container > .block-children {
       border-left: 0 !important;
