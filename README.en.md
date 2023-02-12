@@ -4,6 +4,8 @@
 
 This plugin provides 2 extra ways to embed blocks/pages.
 
+Supports auto heading processing for embedded blocks, automatically adjusting the heading size according to the context.
+
 The plugin relies heavily on Logseq's DOM structure, so it is version sensitive. The author will try to ensure compatibility with the latest version of Logseq, other versions will not be purposely supported.
 
 ## Usage
@@ -17,5 +19,18 @@ Theme developers can control the embed's control bar's color by setting the `--k
 ```css
 ::after {
   --kef-another-embed-handle-color: #ff0;
+}
+```
+
+The font size of each heading level can be set with the following CSS variables:
+
+```css
+:root {
+  --kef-ae-h1-fs: 2em;
+  --kef-ae-h2-fs: 1.5em;
+  --kef-ae-h3-fs: 1.2em;
+  --kef-ae-h4-fs: 1em;
+  --kef-ae-h5-fs: 0.83em;
+  --kef-ae-h6-fs: 0.75em;
 }
 ```
