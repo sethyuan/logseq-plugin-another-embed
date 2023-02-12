@@ -66,6 +66,55 @@ async function main() {
       cursor: pointer;
       z-index: 2;
     }
+
+    :root {
+      --kef-ae-h1-fs: 2em;
+      --kef-ae-h2-fs: 1.5em;
+      --kef-ae-h3-fs: 1.2em;
+      --kef-ae-h4-fs: 1em;
+      --kef-ae-h5-fs: 0.83em;
+      --kef-ae-h6-fs: 0.75em;
+    }
+    .embed-block[data-heading="1"] .ls-block h1,
+    .embed-page[data-heading="1"] .ls-block h2 {
+      font-size: var(--kef-ae-h2-fs);
+    }
+    .embed-block[data-heading="1"] .ls-block h2,
+    .embed-block[data-heading="2"] .ls-block h1,
+    .embed-page[data-heading="1"] .ls-block h3,
+    .embed-page[data-heading="2"] .ls-block h2 {
+      font-size: var(--kef-ae-h3-fs);
+    }
+    .embed-block[data-heading="1"] .ls-block h3,
+    .embed-block[data-heading="2"] .ls-block h2,
+    .embed-block[data-heading="3"] .ls-block h1,
+    .embed-page[data-heading="1"] .ls-block h4,
+    .embed-page[data-heading="2"] .ls-block h3,
+    .embed-page[data-heading="3"] .ls-block h2 {
+      font-size: var(--kef-ae-h4-fs);
+    }
+    .embed-block[data-heading="1"] .ls-block h4,
+    .embed-block[data-heading="2"] .ls-block h3,
+    .embed-block[data-heading="3"] .ls-block h2,
+    .embed-block[data-heading="4"] .ls-block h1,
+    .embed-page[data-heading="1"] .ls-block h5,
+    .embed-page[data-heading="2"] .ls-block h4,
+    .embed-page[data-heading="3"] .ls-block h3,
+    .embed-page[data-heading="4"] .ls-block h2 {
+      font-size: var(--kef-ae-h5-fs);
+    }
+    .embed-block[data-heading="1"] .ls-block :is(h5, h6),
+    .embed-block[data-heading="2"] .ls-block :is(h4, h5, h6),
+    .embed-block[data-heading="3"] .ls-block :is(h3, h4, h5, h6),
+    .embed-block[data-heading="4"] .ls-block :is(h2, h3, h4, h5, h6),
+    .embed-block[data-heading="5"] .ls-block :is(h1, h2, h3, h4, h5, h6),
+    .embed-page[data-heading="1"] .ls-block h6,
+    .embed-page[data-heading="2"] .ls-block :is(h5, h6),
+    .embed-page[data-heading="3"] .ls-block :is(h4, h5, h6),
+    .embed-page[data-heading="4"] .ls-block :is(h3, h4, h5, h6),
+    .embed-page[data-heading="5"] .ls-block :is(h2, h3, h4, h5, h6) {
+      font-size: var(--kef-ae-h6-fs);
+    }
   `)
 
   const appContainer = parent.document.getElementById("app-container")
@@ -130,6 +179,12 @@ async function main() {
       default: false,
       description: t("Enable global alternative embed."),
     },
+    {
+      key: "autoHeading",
+      type: "boolean",
+      default: true,
+      description: t("Enable auto heading processing."),
+    },
   ])
 
   const settingsOff = logseq.onSettingsChanged(injectGlobalStyles)
@@ -193,6 +248,28 @@ function injectGlobalStyles() {
 
 function processEmbeds(embeds) {
   for (const embed of embeds) {
+    if (logseq.settings?.autoHeading) {
+      const containingBlock = embed
+        .closest("[blockid]")
+        .parentElement.closest("[blockid]")
+        .parentElement.closest("[blockid]")
+      if (containingBlock == null) {
+        // Containing block is page itself.
+        embed.dataset.heading = 1
+      } else {
+        const heading =
+          containingBlock.closest(".embed-block, .embed-page")?.dataset
+            .heading ??
+          containingBlock.firstElementChild
+            .querySelector(":is(h1, h2, h3, h4, h5, h6)")
+            ?.tagName.toLowerCase()
+        if (heading) {
+          embed.dataset.heading = heading.startsWith("h")
+            ? heading.substring(1)
+            : +heading + 1
+        }
+      }
+    }
     const blockContentWrapper = embed.closest(".block-content-wrapper")
     if (blockContentWrapper) {
       blockContentWrapper.style.width = "100%"
@@ -205,6 +282,7 @@ function processEmbeds(embeds) {
 
 function reverseEmbedsProcessing(embeds) {
   for (const embed of embeds) {
+    delete embed.dataset.heading
     const blockContentWrapper = embed.closest(".block-content-wrapper")
     if (blockContentWrapper?.previousElementSibling) {
       blockContentWrapper.previousElementSibling.style.display = ""
