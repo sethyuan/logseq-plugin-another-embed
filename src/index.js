@@ -130,6 +130,23 @@ async function main() {
     cursorBack(2)
   })
 
+  if (logseq.settings?.autoHeadingShortcut) {
+    logseq.App.registerCommandShortcut(
+      { binding: logseq.settings.autoHeadingShortcut },
+      async () => {
+        console.log("entering command")
+        const block = await logseq.Editor.getCurrentBlock()
+        if (block != null) {
+          if (block.properties?.heading) {
+            await logseq.Editor.removeBlockProperty(block.uuid, "heading")
+          } else {
+            await logseq.Editor.upsertBlockProperty(block.uuid, "heading", true)
+          }
+        }
+      },
+    )
+  }
+
   const observer = new MutationObserver(async (mutationList) => {
     for (const mutation of mutationList) {
       const target = mutation.target
@@ -184,6 +201,12 @@ async function main() {
       type: "boolean",
       default: true,
       description: t("Enable auto heading processing."),
+    },
+    {
+      key: "autoHeadingShortcut",
+      type: "string",
+      default: "mod+0",
+      description: t("Assign a shortcut to toggle auto heading."),
     },
   ])
 
