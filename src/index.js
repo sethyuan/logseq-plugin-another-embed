@@ -77,44 +77,44 @@ async function main() {
       --kef-ae-h5-fs: 0.83em;
       --kef-ae-h6-fs: 0.75em;
     }
-    .embed-block[data-heading="1"] .ls-block h1,
-    .embed-page[data-heading="1"] .ls-block h2 {
+    .embed-block[data-heading="1"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+    .embed-page[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
       font-size: var(--kef-ae-h2-fs);
     }
-    .embed-block[data-heading="1"] .ls-block h2,
-    .embed-block[data-heading="2"] .ls-block h1,
-    .embed-page[data-heading="1"] .ls-block h3,
-    .embed-page[data-heading="2"] .ls-block h2 {
+    .embed-block[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
+    .embed-block[data-heading="2"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+    .embed-page[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+    .embed-page[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
       font-size: var(--kef-ae-h3-fs);
     }
-    .embed-block[data-heading="1"] .ls-block h3,
-    .embed-block[data-heading="2"] .ls-block h2,
-    .embed-block[data-heading="3"] .ls-block h1,
-    .embed-page[data-heading="1"] .ls-block h4,
-    .embed-page[data-heading="2"] .ls-block h3,
-    .embed-page[data-heading="3"] .ls-block h2 {
+    .embed-block[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+    .embed-block[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
+    .embed-block[data-heading="3"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+    .embed-page[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
+    .embed-page[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+    .embed-page[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
       font-size: var(--kef-ae-h4-fs);
     }
-    .embed-block[data-heading="1"] .ls-block h4,
-    .embed-block[data-heading="2"] .ls-block h3,
-    .embed-block[data-heading="3"] .ls-block h2,
-    .embed-block[data-heading="4"] .ls-block h1,
-    .embed-page[data-heading="1"] .ls-block h5,
-    .embed-page[data-heading="2"] .ls-block h4,
-    .embed-page[data-heading="3"] .ls-block h3,
-    .embed-page[data-heading="4"] .ls-block h2 {
+    .embed-block[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
+    .embed-block[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+    .embed-block[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
+    .embed-block[data-heading="4"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+    .embed-page[data-heading="1"] :is(.ls-block h5, .editor-inner .h5.uniline-block),
+    .embed-page[data-heading="2"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
+    .embed-page[data-heading="3"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+    .embed-page[data-heading="4"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
       font-size: var(--kef-ae-h5-fs);
     }
-    .embed-block[data-heading="1"] .ls-block :is(h5, h6),
-    .embed-block[data-heading="2"] .ls-block :is(h4, h5, h6),
-    .embed-block[data-heading="3"] .ls-block :is(h3, h4, h5, h6),
-    .embed-block[data-heading="4"] .ls-block :is(h2, h3, h4, h5, h6),
-    .embed-block[data-heading="5"] .ls-block :is(h1, h2, h3, h4, h5, h6),
-    .embed-page[data-heading="1"] .ls-block h6,
-    .embed-page[data-heading="2"] .ls-block :is(h5, h6),
-    .embed-page[data-heading="3"] .ls-block :is(h4, h5, h6),
-    .embed-page[data-heading="4"] .ls-block :is(h3, h4, h5, h6),
-    .embed-page[data-heading="5"] .ls-block :is(h2, h3, h4, h5, h6) {
+    .embed-block[data-heading="1"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
+    .embed-block[data-heading="2"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
+    .embed-block[data-heading="3"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
+    .embed-block[data-heading="4"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block),
+    .embed-block[data-heading="5"] :is(.ls-block :is(h1, h2, h3, h4, h5, h6), .editor-inner :is(.h1, .h2, .h3, .h4, .h5, .h6).uniline-block),
+    .embed-page[data-heading="1"] :is(.ls-block h6, .editor-inner .h6.uniline-block),
+    .embed-page[data-heading="2"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
+    .embed-page[data-heading="3"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
+    .embed-page[data-heading="4"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
+    .embed-page[data-heading="5"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block) {
       font-size: var(--kef-ae-h6-fs);
     }
   `)
@@ -290,16 +290,44 @@ function processEmbeds(embeds) {
         // Containing block is page itself.
         embed.dataset.heading = 1
       } else {
-        const heading =
-          containingBlock.closest(".embed-block, .embed-page")?.dataset
-            .heading ??
-          containingBlock.firstElementChild
-            .querySelector(":is(h1, h2, h3, h4, h5, h6)")
-            ?.tagName.toLowerCase()
-        if (heading) {
-          embed.dataset.heading = heading.startsWith("h")
-            ? heading.substring(1)
-            : +heading + 1
+        if (containingBlock.dataset.embed) {
+          const outerEmbed = containingBlock.closest(
+            ".embed-block, .embed-page",
+          )
+          if (outerEmbed) {
+            embed.dataset.heading =
+              embed.classList.contains("embed-block") &&
+              embed.previousElementSibling?.dataset.ref === ".embed-children"
+                ? +outerEmbed.dataset.heading
+                : +outerEmbed.dataset.heading + 1
+          }
+        } else {
+          const headingEl = containingBlock.firstElementChild.querySelector(
+            ":is(h1,h2,h3,h4,h5,h6), .uniline-block:is(.h1,.h2,.h3,.h4,.h5,.h6)",
+          )
+          if (headingEl) {
+            let heading
+            if (headingEl.tagName.startsWith("H")) {
+              heading = +headingEl.tagName.substring(1)
+            } else if (headingEl.classList.contains("h1")) {
+              heading = 1
+            } else if (headingEl.classList.contains("h2")) {
+              heading = 2
+            } else if (headingEl.classList.contains("h3")) {
+              heading = 3
+            } else if (headingEl.classList.contains("h4")) {
+              heading = 4
+            } else if (headingEl.classList.contains("h5")) {
+              heading = 5
+            } else if (headingEl.classList.contains("h6")) {
+              heading = 6
+            }
+            embed.dataset.heading =
+              embed.classList.contains("embed-block") &&
+              embed.previousElementSibling?.dataset.ref === ".embed-children"
+                ? heading - 1
+                : heading
+          }
         }
       }
     }
