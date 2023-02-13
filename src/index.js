@@ -205,7 +205,7 @@ async function main() {
     {
       key: "autoHeadingShortcut",
       type: "string",
-      default: "mod+0",
+      default: "mod+9",
       description: t("Assign a shortcut to toggle auto heading."),
     },
   ])
