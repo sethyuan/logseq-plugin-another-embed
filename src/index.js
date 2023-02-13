@@ -2,6 +2,8 @@ import "@logseq/libs"
 import { setup, t } from "logseq-l10n"
 import zhCN from "./translations/zh-CN.json"
 
+const HEADING_REGEX = /^#+ /
+
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
@@ -134,11 +136,19 @@ async function main() {
     logseq.App.registerCommandShortcut(
       { binding: logseq.settings.autoHeadingShortcut },
       async () => {
-        console.log("entering command")
         const block = await logseq.Editor.getCurrentBlock()
         if (block != null) {
           if (block.properties?.heading) {
-            await logseq.Editor.removeBlockProperty(block.uuid, "heading")
+            if (HEADING_REGEX.test(block.content)) {
+              const content = `${block.content.replace(
+                HEADING_REGEX,
+                "",
+              )}\nheading:: true`
+              await logseq.Editor.updateBlock(block.uuid, content)
+              await logseq.Editor.exitEditingMode()
+            } else {
+              await logseq.Editor.removeBlockProperty(block.uuid, "heading")
+            }
           } else {
             await logseq.Editor.upsertBlockProperty(block.uuid, "heading", true)
           }
