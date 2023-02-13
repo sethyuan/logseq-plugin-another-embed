@@ -199,6 +199,42 @@ async function main() {
     ),
   )
 
+  const dbOff = logseq.DB.onChanged(async ({ blocks, txData, txMeta }) => {
+    console.log(txData, txMeta, blocks)
+    if (txMeta?.outlinerOp === "deleteBlocks") {
+      const [deletedBlockId] = txData[0]
+      const deletedBlock = blocks.find((b) => b.id === deletedBlockId)
+      if (deletedBlock == null) return
+      let currentBlock = null
+      for (const [e, a, v, , isAdded] of txData) {
+        if (a === "pathRefs" && v === deletedBlockId && !isAdded) {
+          if (currentBlock == null) {
+            currentBlock = await logseq.Editor.getCurrentBlock()
+          }
+          if (currentBlock.content !== deletedBlock.content) continue
+          console.log("found ref", e, currentBlock.id)
+          const refBlock = blocks.find((b) => b.id === e)
+          if (refBlock) {
+            await logseq.Editor.updateBlock(
+              refBlock.uuid,
+              refBlock.content.replace(
+                `((${deletedBlock.uuid}))`,
+                `((${currentBlock.uuid}))`,
+              ),
+            )
+          }
+        }
+      }
+    } else if (txMeta?.outlinerOp === "insertBlocks") {
+      // const [e, a, v, , isAdded] = txData[0]
+      // if (a === "refs" && isAdded) {
+      //   const refBlock = blocks.find((b) => b.id === e)
+      //   const newBlock = blocks.find((b) => b.id === v)
+      //   await logseq.Editor.updateBlock(refBlock.uuid, refBlock.content.replace(`((${}))`, `((${}))`))
+      // }
+    }
+  })
+
   logseq.useSettingsSchema([
     {
       key: "globalEmbed",
@@ -218,11 +254,18 @@ async function main() {
       default: "mod+9",
       description: t("Assign a shortcut to toggle auto heading."),
     },
+    {
+      key: "deletionHelper",
+      type: "boolean",
+      default: true,
+      description: t("Enable deletion helper."),
+    },
   ])
 
   const settingsOff = logseq.onSettingsChanged(injectGlobalStyles)
 
   logseq.beforeunload(() => {
+    dbOff()
     settingsOff()
     observer.disconnect()
     appContainer.removeEventListener("click", onClick)
