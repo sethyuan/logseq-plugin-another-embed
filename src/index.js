@@ -145,7 +145,7 @@ async function main() {
                 "",
               )}\nheading:: true`
               await logseq.Editor.updateBlock(block.uuid, content)
-              await logseq.Editor.exitEditingMode()
+              await logseq.Editor.exitEditingMode(true)
             } else {
               await logseq.Editor.removeBlockProperty(block.uuid, "heading")
             }
