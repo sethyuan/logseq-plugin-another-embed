@@ -203,6 +203,7 @@ async function main() {
     if (txMeta?.outlinerOp === "deleteBlocks") {
       let deletedBlock = null
       let currentBlock = null
+      let persistBlock = false
       for (const [e, a, v, , isAdded] of txData) {
         if (deletedBlock == null && a === "content" && !isAdded) {
           deletedBlock = blocks.find((b) => b.id === e)
@@ -212,24 +213,16 @@ async function main() {
         if (a === "refs" && v === deletedBlock.id && !isAdded) {
           if (currentBlock == null) {
             currentBlock = await logseq.Editor.getCurrentBlock()
-            console.log(currentBlock)
           }
           const refBlock = blocks.find((b) => b.id === e)
           if (refBlock == null) continue
           if (
             !currentBlock.content &&
-            parent.document.activeElement.value ===
-              deletedBlock.content.replace(`\nid:: ${deletedBlock.uuid}`, "")
+            (parent.document.activeElement.value?.length > 0 ||
+              Array.isArray(currentBlock.children[0]))
           ) {
-            // TODO: deal with persisting the id.
-            setTimeout(() => {
-              logseq.Editor.upsertBlockProperty(
-                currentBlock.uuid,
-                "id",
-                currentBlock.uuid,
-              )
-            }, 100)
-            await logseq.Editor.updateBlock(
+            persistBlock = true
+            logseq.Editor.updateBlock(
               refBlock.uuid,
               refBlock.content.replace(
                 `((${deletedBlock.uuid}))`,
@@ -237,7 +230,7 @@ async function main() {
               ),
             )
           } else {
-            await logseq.Editor.updateBlock(
+            logseq.Editor.updateBlock(
               refBlock.uuid,
               refBlock.content.replace(
                 `((${deletedBlock.uuid}))`,
@@ -247,19 +240,41 @@ async function main() {
           }
         }
       }
+      if (persistBlock && currentBlock) {
+        // Found refs to the deleted block
+        await logseq.Editor.exitEditingMode()
+        await logseq.Editor.updateBlock(
+          currentBlock.uuid,
+          deletedBlock.content.replace(
+            /^id:: .+/m,
+            `id:: ${currentBlock.uuid}`,
+          ),
+        )
+        await logseq.Editor.editBlock(currentBlock.uuid, { pos: 0 })
+      }
     } else if (txMeta?.outlinerOp === "insertBlocks") {
+      let newBlock = null
       for (const [e, a, v, , isAdded] of txData) {
         if (a === "refs" && isAdded) {
           const refBlock = blocks.find((b) => b.id === e)
-          const newBlock = blocks.find((b) => b.id === v)
-          // TODO: deal with persisting the id on newBlock.
+          if (newBlock == null) {
+            newBlock = blocks.find((b) => b.id === v)
+          }
           if (refBlock.content.includes("((missing))")) {
-            await logseq.Editor.updateBlock(
+            logseq.Editor.updateBlock(
               refBlock.uuid,
               refBlock.content.replace("((missing))", `((${newBlock.uuid}))`),
             )
           }
         }
+      }
+      if (newBlock) {
+        await logseq.Editor.updateBlock(
+          newBlock.uuid,
+          `${newBlock.content}\nid:: ${newBlock.uuid}`,
+        )
+        await logseq.Editor.exitEditingMode()
+        await logseq.Editor.editBlock(newBlock.uuid)
       }
     }
   })
