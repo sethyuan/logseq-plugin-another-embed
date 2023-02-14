@@ -2,9 +2,9 @@
 
 # logseq-plugin-another-embed
 
-This plugin provides 2 extra ways to embed blocks/pages.
+This plugin provides 2 extra ways to embed blocks/pages. Supports auto heading processing for embedded blocks, automatically adjusting the heading size according to the context.
 
-Supports auto heading processing for embedded blocks, automatically adjusting the heading size according to the context.
+This plugin offers additional handling for cases where a block cut-and-paste or backward deletion would cause missing references.
 
 The plugin relies heavily on Logseq's DOM structure, so it is version sensitive. The author will try to ensure compatibility with the latest version of Logseq, other versions will not be purposely supported.
 
