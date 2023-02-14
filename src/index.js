@@ -4,6 +4,8 @@ import zhCN from "./translations/zh-CN.json"
 
 const HEADING_REGEX = /^#+ /
 
+let dbOff = null
+
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
@@ -199,91 +201,6 @@ async function main() {
     ),
   )
 
-  const dbOff = logseq.settings?.deletionHelper
-    ? logseq.DB.onChanged(async ({ blocks, txData, txMeta }) => {
-        if (txMeta?.outlinerOp === "deleteBlocks") {
-          let deletedBlock = null
-          let currentBlock = null
-          let persistBlock = false
-          for (const [e, a, v, , isAdded] of txData) {
-            if (deletedBlock == null && a === "content" && !isAdded) {
-              deletedBlock = blocks.find((b) => b.id === e)
-              continue
-            }
-            if (deletedBlock == null) continue
-            if (a === "refs" && v === deletedBlock.id && !isAdded) {
-              if (currentBlock == null) {
-                currentBlock = await logseq.Editor.getCurrentBlock()
-              }
-              const refBlock = blocks.find((b) => b.id === e)
-              if (refBlock == null) continue
-              if (
-                !currentBlock.content &&
-                (parent.document.activeElement.value?.length > 0 ||
-                  Array.isArray(currentBlock.children[0]))
-              ) {
-                persistBlock = true
-                logseq.Editor.updateBlock(
-                  refBlock.uuid,
-                  refBlock.content.replace(
-                    `((${deletedBlock.uuid}))`,
-                    `((${currentBlock.uuid}))`,
-                  ),
-                )
-              } else {
-                logseq.Editor.updateBlock(
-                  refBlock.uuid,
-                  refBlock.content.replace(
-                    `((${deletedBlock.uuid}))`,
-                    `((missing))`,
-                  ),
-                )
-              }
-            }
-          }
-          if (persistBlock && currentBlock) {
-            // Found refs to the deleted block
-            await logseq.Editor.exitEditingMode()
-            await logseq.Editor.updateBlock(
-              currentBlock.uuid,
-              deletedBlock.content.replace(
-                /^id:: .+/m,
-                `id:: ${currentBlock.uuid}`,
-              ),
-            )
-            await logseq.Editor.editBlock(currentBlock.uuid, { pos: 0 })
-          }
-        } else if (txMeta?.outlinerOp === "insertBlocks") {
-          let newBlock = null
-          for (const [e, a, v, , isAdded] of txData) {
-            if (a === "refs" && isAdded) {
-              const refBlock = blocks.find((b) => b.id === e)
-              if (newBlock == null) {
-                newBlock = blocks.find((b) => b.id === v)
-              }
-              if (refBlock.content.includes("((missing))")) {
-                logseq.Editor.updateBlock(
-                  refBlock.uuid,
-                  refBlock.content.replace(
-                    "((missing))",
-                    `((${newBlock.uuid}))`,
-                  ),
-                )
-              }
-            }
-          }
-          if (newBlock) {
-            await logseq.Editor.updateBlock(
-              newBlock.uuid,
-              `${newBlock.content}\nid:: ${newBlock.uuid}`,
-            )
-            await logseq.Editor.exitEditingMode()
-            await logseq.Editor.editBlock(newBlock.uuid)
-          }
-        }
-      })
-    : null
-
   logseq.useSettingsSchema([
     {
       key: "globalEmbed",
@@ -304,14 +221,14 @@ async function main() {
       description: t("Assign a shortcut to toggle auto heading."),
     },
     {
-      key: "deletionHelper",
+      key: "refHelper",
       type: "boolean",
       default: false,
       description: t("Enable deletion helper."),
     },
   ])
 
-  const settingsOff = logseq.onSettingsChanged(injectGlobalStyles)
+  const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
 
   logseq.beforeunload(() => {
     dbOff?.()
@@ -321,6 +238,17 @@ async function main() {
   })
 
   console.log("#another-embed loaded")
+}
+
+function onSettingsChanged() {
+  injectGlobalStyles()
+  if (logseq.settings?.refHelper) {
+    dbOff?.()
+    dbOff = logseq.DB.onChanged(refHelper)
+  } else {
+    dbOff?.()
+    dbOff = null
+  }
 }
 
 function injectGlobalStyles() {
@@ -464,6 +392,81 @@ function onClick(e) {
       blockContentWrapper.previousElementSibling.style.display = ""
     } else {
       blockContentWrapper.previousElementSibling.style.display = "none"
+    }
+  }
+}
+
+async function refHelper({ blocks, txData, txMeta }) {
+  if (txMeta?.outlinerOp === "deleteBlocks") {
+    let deletedBlock = null
+    let currentBlock = null
+    let persistBlock = false
+    for (const [e, a, v, , isAdded] of txData) {
+      if (deletedBlock == null && a === "content" && !isAdded) {
+        deletedBlock = blocks.find((b) => b.id === e)
+        continue
+      }
+      if (deletedBlock == null) continue
+      if (a === "refs" && v === deletedBlock.id && !isAdded) {
+        if (currentBlock == null) {
+          currentBlock = await logseq.Editor.getCurrentBlock()
+        }
+        const refBlock = blocks.find((b) => b.id === e)
+        if (refBlock == null) continue
+        if (
+          currentBlock &&
+          !currentBlock.content &&
+          (parent.document.activeElement.value?.length > 0 ||
+            Array.isArray(currentBlock.children[0]))
+        ) {
+          persistBlock = true
+          logseq.Editor.updateBlock(
+            refBlock.uuid,
+            refBlock.content.replace(
+              `((${deletedBlock.uuid}))`,
+              `((${currentBlock.uuid}))`,
+            ),
+          )
+        } else {
+          logseq.Editor.updateBlock(
+            refBlock.uuid,
+            refBlock.content.replace(`((${deletedBlock.uuid}))`, `((missing))`),
+          )
+        }
+      }
+    }
+    if (persistBlock && currentBlock) {
+      // Found refs to the deleted block
+      await logseq.Editor.exitEditingMode()
+      await logseq.Editor.updateBlock(
+        currentBlock.uuid,
+        deletedBlock.content.replace(/^id:: .+/m, `id:: ${currentBlock.uuid}`),
+      )
+      await logseq.Editor.editBlock(currentBlock.uuid, { pos: 0 })
+    }
+  } else if (txMeta?.outlinerOp === "insertBlocks") {
+    let newBlock = null
+    for (const [e, a, v, , isAdded] of txData) {
+      if (a === "refs" && isAdded) {
+        const refBlock = blocks.find((b) => b.id === e)
+        if (newBlock == null) {
+          newBlock = blocks.find((b) => b.id === v)
+        }
+        if (refBlock.content.includes("((missing))")) {
+          logseq.Editor.updateBlock(
+            refBlock.uuid,
+            refBlock.content.replace("((missing))", `((${newBlock.uuid}))`),
+          )
+        }
+      }
+    }
+    if (newBlock) {
+      await logseq.Editor.updateBlock(
+        newBlock.uuid,
+        `${newBlock.content}\nid:: ${newBlock.uuid}`,
+      )
+      await logseq.Editor.exitEditingMode()
+      await logseq.Editor.editBlock(newBlock.uuid)
     }
   }
 }
