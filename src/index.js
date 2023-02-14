@@ -461,11 +461,11 @@ async function refHelper({ blocks, txData, txMeta }) {
       }
     }
     if (newBlock) {
+      await logseq.Editor.exitEditingMode()
       await logseq.Editor.updateBlock(
         newBlock.uuid,
         `${newBlock.content}\nid:: ${newBlock.uuid}`,
       )
-      await logseq.Editor.exitEditingMode()
       await logseq.Editor.editBlock(newBlock.uuid)
     }
   }
