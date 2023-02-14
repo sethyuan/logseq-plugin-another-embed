@@ -12,6 +12,8 @@ The plugin relies heavily on Logseq's DOM structure, so it is version sensitive.
 
 https://user-images.githubusercontent.com/3410293/202061912-7a1495ba-09af-4657-9442-c29d6d5abb55.mp4
 
+https://user-images.githubusercontent.com/3410293/218662951-59a99b70-b86c-476b-8389-b388a147a7c9.mp4
+
 ## Style Customization
 
 Theme developers can control the embed's control bar's color by setting the `--kef-another-embed-handle-color` CSS variable. E.g:
