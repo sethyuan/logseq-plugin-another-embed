@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-another-embed",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-another-embed",
@@ -11,7 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@logseq/libs": "0.0.6",
+    "@logseq/libs": "^0.0.14",
     "logseq-l10n": "^0.2.0"
   },
   "devDependencies": {
