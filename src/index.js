@@ -12,7 +12,7 @@ async function main() {
   const rootStyles = parent.getComputedStyle(parent.document.documentElement)
   logseq.provideStyle(`
     ::after {
-      --kef-another-embed-handle-color: ${rootStyles.getPropertyValue(
+      --kef-ae-handle-color: ${rootStyles.getPropertyValue(
         "--ls-active-secondary-color",
       )};
     }
@@ -66,7 +66,7 @@ async function main() {
       left: -7px;
       width: 14px;
       height: calc(100% - 10px - 10px);
-      background: var(--kef-another-embed-handle-color);
+      background: var(--kef-ae-handle-color);
       cursor: pointer;
       z-index: 2;
     }
@@ -283,7 +283,7 @@ function injectGlobalStyles() {
           left: -7px;
           width: 14px;
           height: calc(100% - 10px - 10px);
-          background: var(--kef-another-embed-handle-color);
+          background: var(--kef-ae-handle-color);
           cursor: pointer;
           z-index: 2;
         }

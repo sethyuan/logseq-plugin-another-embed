@@ -16,11 +16,11 @@ https://user-images.githubusercontent.com/3410293/218662951-59a99b70-b86c-476b-8
 
 ## Style Customization
 
-Theme developers can control the embed's control bar's color by setting the `--kef-another-embed-handle-color` CSS variable. E.g:
+Theme developers can control the embed's control bar's color by setting the `--kef-ae-handle-color` CSS variable. E.g:
 
 ```css
 ::after {
-  --kef-another-embed-handle-color: #ff0;
+  --kef-ae-handle-color: #ff0;
 }
 ```
 
