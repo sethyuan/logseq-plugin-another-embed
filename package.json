@@ -12,9 +12,13 @@
   },
   "dependencies": {
     "@logseq/libs": "^0.0.14",
-    "logseq-l10n": "^0.2.0"
+    "logseq-l10n": "^0.2.0",
+    "marked": "^4.0.19",
+    "preact": "^10.12.1",
+    "reactutils": "^5.12.0"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^4.0.3",
     "@rollup/plugin-html": "^0.2.4",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",

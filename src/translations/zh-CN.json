@@ -2,5 +2,7 @@
   "Enable global alternative embed.": "开启全局备选嵌入。",
   "Enable auto heading processing.": "开启自动标题处理。",
   "Assign a shortcut to toggle auto heading.": "设置一个切换自动标题设置的快捷键。",
-  "Enable deletion helper.": "开启删除辅助。"
+  "Enable deletion helper.": "开启删除辅助。",
+  "Enable breadcrumb for embeds.": "开启嵌入块的面包屑功能。",
+  "Display the breadcrumb by default or not.": "是否默认显示面包屑。"
 }

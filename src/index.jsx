@@ -1,5 +1,8 @@
 import "@logseq/libs"
 import { setup, t } from "logseq-l10n"
+import { render } from "preact"
+import Breadcrumb from "./comps/Breadcrumb"
+import { parseContent } from "./libs/utils"
 import zhCN from "./translations/zh-CN.json"
 
 const HEADING_REGEX = /^#+ /
@@ -119,6 +122,27 @@ async function main() {
     .embed-page[data-heading="5"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block) {
       font-size: var(--kef-ae-h6-fs);
     }
+
+    .kef-ae-breadcrumb {
+      margin-left: 29px;
+      cursor: default;
+      margin-bottom: -0.25em;
+      padding-top: 5px;
+    }
+    .kef-ae-b-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 6px;
+      height: 6px;
+      background: var(--ls-primary-text-color);
+    }
+    .kef-ae-b-segs {
+      display: none;
+    }
+    .kef-ae-b-show {
+      display: inline;
+    }
   `)
 
   const appContainer = parent.document.getElementById("app-container")
@@ -181,7 +205,7 @@ async function main() {
       const embeds = addedNode.querySelectorAll(
         logseq.settings?.globalEmbed
           ? `.embed-page,.embed-block`
-          : `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
+          : `:is(span[data-ref=".embed"],span[data-ref=".embed-children"]) + :is(.embed-page,.embed-block)`,
       )
 
       if (embeds?.length > 0) {
@@ -197,7 +221,9 @@ async function main() {
 
   processEmbeds(
     parent.document.querySelectorAll(
-      `span[data-ref=".embed"],span[data-ref=".embed-children"]`,
+      logseq.settings?.globalEmbed
+        ? `.embed-page,.embed-block`
+        : `:is(span[data-ref=".embed"],span[data-ref=".embed-children"]) + :is(.embed-page,.embed-block)`,
     ),
   )
 
@@ -225,6 +251,18 @@ async function main() {
       type: "boolean",
       default: false,
       description: t("Enable deletion helper."),
+    },
+    {
+      key: "breadcrumb",
+      type: "boolean",
+      default: false,
+      description: t("Enable breadcrumb for embeds."),
+    },
+    {
+      key: "showBreadcrumbByDefault",
+      type: "boolean",
+      default: false,
+      description: t("Display the breadcrumb by default or not."),
     },
   ])
 
@@ -351,12 +389,32 @@ function processEmbeds(embeds) {
         }
       }
     }
+
     const blockContentWrapper = embed.closest(".block-content-wrapper")
     if (blockContentWrapper) {
       blockContentWrapper.style.width = "100%"
       if (blockContentWrapper.previousElementSibling) {
         blockContentWrapper.previousElementSibling.style.display = "none"
       }
+    }
+
+    if (logseq.settings?.breadcrumb) {
+      embed.style.display = "flex"
+      embed.style.flexDirection = "column"
+      const containing = embed.closest("[id]")
+      const selector = `#${containing.id} [class="${embed.className}"]`
+      const embedded = embed.querySelector("[data-embed]")
+      const blockId = embedded.getAttribute("blockid")
+      const key = `kef-ae-${containing.id}`
+      logseq.provideUI({
+        key,
+        path: selector,
+        template: `<div id="${key}" class="kef-ae-breadcrumb breadcrumb block-parents"></div>`,
+        style: { order: -1 },
+      })
+      setTimeout(() => {
+        renderBreadcrumb(embed, blockId, key)
+      }, 0)
     }
   }
 }
@@ -469,6 +527,36 @@ async function refHelper({ blocks, txData, txMeta }) {
       await logseq.Editor.editBlock(newBlock.uuid)
     }
   }
+}
+
+async function renderBreadcrumb(embed, blockId, elId) {
+  // Page has no breadcrumb need.
+  if (embed.classList.contains("embed-page")) return
+
+  const root = parent.document.getElementById(elId)
+  if (root == null) return
+
+  const path = []
+  let block = await logseq.Editor.getBlock(blockId)
+  if (embed.previousElementSibling?.dataset?.ref === ".embed-children") {
+    path.unshift({
+      label: await parseContent(block.content),
+      uuid: block.uuid,
+    })
+  }
+  while (block.parent != null) {
+    block =
+      block.page.id === block.parent.id
+        ? await logseq.Editor.getPage(block.parent.id)
+        : await logseq.Editor.getBlock(block.parent.id)
+    path.unshift({
+      label: (await parseContent(block.content)) ?? block.originalName,
+      name: block.name,
+      uuid: block.uuid,
+    })
+  }
+
+  render(<Breadcrumb segments={path} />, root)
 }
 
 logseq.ready(main).catch(console.error)

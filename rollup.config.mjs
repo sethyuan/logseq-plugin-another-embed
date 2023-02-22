@@ -1,3 +1,4 @@
+import alias from "@rollup/plugin-alias"
 import html from "@rollup/plugin-html"
 import json from "@rollup/plugin-json"
 import { nodeResolve } from "@rollup/plugin-node-resolve"
@@ -5,12 +6,18 @@ import { readFile } from "fs/promises"
 import { defineRollupSwcOption, swc } from "rollup-plugin-swc3"
 
 export default {
-  input: "src/index.js",
+  input: "src/index.jsx",
   output: {
     dir: "dist",
     entryFileNames: "[name].[hash].js",
   },
   plugins: [
+    alias({
+      entries: [
+        { find: "react", replacement: "preact/compat" },
+        { find: "react-dom", replacement: "preact/compat" },
+      ],
+    }),
     html({
       fileName: "index.html",
       template: async ({ files }) => {
@@ -30,6 +37,14 @@ export default {
       defineRollupSwcOption({
         jsc: {
           target: "es2021",
+          transform: {
+            react: {
+              pragma: "h",
+              pragmaFrag: "Fragment",
+              importSource: "preact",
+              runtime: "automatic",
+            },
+          },
         },
       }),
     ),
