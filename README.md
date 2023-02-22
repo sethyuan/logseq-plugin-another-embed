@@ -14,6 +14,8 @@ https://user-images.githubusercontent.com/3410293/202061912-7a1495ba-09af-4657-9
 
 https://user-images.githubusercontent.com/3410293/218662951-59a99b70-b86c-476b-8389-b388a147a7c9.mp4
 
+https://user-images.githubusercontent.com/3410293/220614901-4aa9bb01-414a-4eb2-bd37-5428edc0a4e8.mp4
+
 ## 自定义样式
 
 主题开发者可通过设置 `--kef-ae-handle-color` CSS 变量来控制嵌入块控制条的颜色。例如：
