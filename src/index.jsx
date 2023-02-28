@@ -84,13 +84,13 @@ async function main() {
     }
     .embed-block[data-heading="1"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
     .embed-page[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h2-fs);
+      font-size: var(--kef-ae-h2-fs) !important;
     }
     .embed-block[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
     .embed-block[data-heading="2"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
     .embed-page[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
     .embed-page[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h3-fs);
+      font-size: var(--kef-ae-h3-fs) !important;
     }
     .embed-block[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
     .embed-block[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
@@ -98,7 +98,7 @@ async function main() {
     .embed-page[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
     .embed-page[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
     .embed-page[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h4-fs);
+      font-size: var(--kef-ae-h4-fs) !important;
     }
     .embed-block[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
     .embed-block[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
@@ -108,7 +108,7 @@ async function main() {
     .embed-page[data-heading="2"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
     .embed-page[data-heading="3"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
     .embed-page[data-heading="4"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h5-fs);
+      font-size: var(--kef-ae-h5-fs) !important;
     }
     .embed-block[data-heading="1"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
     .embed-block[data-heading="2"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
@@ -120,7 +120,7 @@ async function main() {
     .embed-page[data-heading="3"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
     .embed-page[data-heading="4"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
     .embed-page[data-heading="5"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block) {
-      font-size: var(--kef-ae-h6-fs);
+      font-size: var(--kef-ae-h6-fs) !important;
     }
 
     .kef-ae-breadcrumb {
