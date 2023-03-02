@@ -53,7 +53,7 @@ async function main() {
       margin-bottom: 0 !important;
     }
     span[data-ref=".embed"] + .embed-page {
-      padding-left: 29px !important;
+      padding-left: 26px !important;
     }
     span[data-ref=".embed"] + .embed-block,
     span[data-ref=".embed-children"] + .embed-block {
@@ -124,7 +124,7 @@ async function main() {
     }
 
     .kef-ae-breadcrumb {
-      margin-left: 29px;
+      margin-left: 26px;
       cursor: default;
       margin-bottom: -0.25em;
       padding-top: 5px;
@@ -410,7 +410,14 @@ function processEmbeds(embeds) {
         key,
         path: selector,
         template: `<div id="${key}" class="kef-ae-breadcrumb breadcrumb block-parents"></div>`,
-        style: { order: -1 },
+        style: {
+          order: -1,
+          paddingBottom:
+            embed.classList.contains("embed-page") &&
+            embed.previousElementSibling?.dataset?.ref === ".embed-children"
+              ? "0.25rem"
+              : 0,
+        },
       })
       setTimeout(() => {
         renderBreadcrumb(embed, blockId, key)
@@ -531,14 +538,21 @@ async function refHelper({ blocks, txData, txMeta }) {
 
 async function renderBreadcrumb(embed, blockId, elId) {
   // Page has no breadcrumb need.
-  if (embed.classList.contains("embed-page")) return
+  if (
+    embed.classList.contains("embed-page") &&
+    embed.previousElementSibling?.dataset?.ref !== ".embed-children"
+  )
+    return
 
   const root = parent.document.getElementById(elId)
   if (root == null) return
 
   const path = []
   let block = await logseq.Editor.getBlock(blockId)
-  if (embed.previousElementSibling?.dataset?.ref === ".embed-children") {
+  if (
+    embed.previousElementSibling?.dataset?.ref === ".embed-children" &&
+    embed.classList.contains("embed-block")
+  ) {
     path.unshift({
       label: await parseContent(block.content),
       uuid: block.uuid,
