@@ -1,20 +1,10 @@
-import { useState } from "preact/hooks"
 import { cls } from "reactutils"
 
-export default function FavArrow({ itemEl }) {
-  const [expanded, setExpanded] = useState(false)
-
-  function toggleList(e) {
-    e.preventDefault()
-    e.stopPropagation()
-    itemEl.classList.toggle("kef-ae-fav-expanded")
-    setExpanded((v) => !v)
-  }
-
+export default function FavArrow({ expanded, onToggle }) {
   return (
     <span
       class={cls("kef-ae-fav-arrow", expanded && "kef-ae-fav-arrow-expanded")}
-      onClick={toggleList}
+      onClick={onToggle}
     >
       <svg
         version="1.1"

@@ -58,3 +58,18 @@ export async function hash(text) {
     .join("")
   return hashed
 }
+
+export async function queryForSubItems(name) {
+  // TODO: also deal with tag ref hierarchies.
+  const children = (
+    await logseq.DB.datascriptQuery(
+      `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
+       :in $ ?name
+       :where
+       [?t :block/original-name ?name]
+       [?p :block/namespace ?t]]`,
+      `"${name}"`,
+    )
+  ).flat()
+  return children
+}
