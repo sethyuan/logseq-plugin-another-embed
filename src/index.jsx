@@ -2,6 +2,7 @@ import "@logseq/libs"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Breadcrumb from "./comps/Breadcrumb"
+import { load as favoriteHelper } from "./favorite"
 import { parseContent } from "./libs/utils"
 import zhCN from "./translations/zh-CN.json"
 
@@ -13,137 +14,140 @@ async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
   const rootStyles = parent.getComputedStyle(parent.document.documentElement)
-  logseq.provideStyle(`
-    ::after {
-      --kef-ae-handle-color: ${rootStyles.getPropertyValue(
-        "--ls-active-secondary-color",
-      )};
-    }
-    span[data-ref=".embed"] {
-      display: none !important;
-    }
-    span[data-ref=".embed"] + .embed-block > .px-3 {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
+  logseq.provideStyle({
+    key: "kef-ae",
+    style: `
+      ::after {
+        --kef-ae-handle-color: ${rootStyles.getPropertyValue(
+          "--ls-active-secondary-color",
+        )};
+      }
+      span[data-ref=".embed"] {
+        display: none !important;
+      }
+      span[data-ref=".embed"] + .embed-block > .px-3 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
 
-    span[data-ref=".embed-children"],
-    span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child,
-    span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container > .block-children-left-border,
-    span[data-ref=".embed-children"] + .embed-page > .embed-header {
-      display: none !important;
-    }
-    span[data-ref=".embed-children"] + .embed-page > .blocks-container > div > div > .pre-block {
-      display: none !important;
-    }
-    span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container {
-      margin-left: 0 !important;
-    }
-    span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container > .block-children {
-      border-left: 0 !important;
-    }
-    span[data-ref=".embed"] + .embed-page,
-    span[data-ref=".embed-children"] + .embed-page {
-      position: relative;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-      margin-top: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    span[data-ref=".embed"] + .embed-page {
-      padding-left: 26px !important;
-    }
-    span[data-ref=".embed"] + .embed-block,
-    span[data-ref=".embed-children"] + .embed-block {
-      position: relative;
-    }
-    span[data-ref=".embed"] + .embed-block:hover::after,
-    span[data-ref=".embed-children"] + .embed-block:hover::after,
-    span[data-ref=".embed"] + .embed-page:hover::after,
-    span[data-ref=".embed-children"] + .embed-page:hover::after {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: -7px;
-      width: 14px;
-      height: calc(100% - 10px - 10px);
-      background: var(--kef-ae-handle-color);
-      cursor: pointer;
-      z-index: 2;
-    }
+      span[data-ref=".embed-children"],
+      span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child,
+      span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container > .block-children-left-border,
+      span[data-ref=".embed-children"] + .embed-page > .embed-header {
+        display: none !important;
+      }
+      span[data-ref=".embed-children"] + .embed-page > .blocks-container > div > div > .pre-block {
+        display: none !important;
+      }
+      span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container {
+        margin-left: 0 !important;
+      }
+      span[data-ref=".embed-children"] + .embed-block > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child > .block-children-container > .block-children {
+        border-left: 0 !important;
+      }
+      span[data-ref=".embed"] + .embed-page,
+      span[data-ref=".embed-children"] + .embed-page {
+        position: relative;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+      span[data-ref=".embed"] + .embed-page {
+        padding-left: 26px !important;
+      }
+      span[data-ref=".embed"] + .embed-block,
+      span[data-ref=".embed-children"] + .embed-block {
+        position: relative;
+      }
+      span[data-ref=".embed"] + .embed-block:hover::after,
+      span[data-ref=".embed-children"] + .embed-block:hover::after,
+      span[data-ref=".embed"] + .embed-page:hover::after,
+      span[data-ref=".embed-children"] + .embed-page:hover::after {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: -7px;
+        width: 14px;
+        height: calc(100% - 10px - 10px);
+        background: var(--kef-ae-handle-color);
+        cursor: pointer;
+        z-index: 2;
+      }
 
-    :root {
-      --kef-ae-h1-fs: 2em;
-      --kef-ae-h2-fs: 1.5em;
-      --kef-ae-h3-fs: 1.2em;
-      --kef-ae-h4-fs: 1em;
-      --kef-ae-h5-fs: 0.83em;
-      --kef-ae-h6-fs: 0.75em;
-    }
-    .embed-block[data-heading="1"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
-    .embed-page[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h2-fs) !important;
-    }
-    .embed-block[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
-    .embed-block[data-heading="2"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
-    .embed-page[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
-    .embed-page[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h3-fs) !important;
-    }
-    .embed-block[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
-    .embed-block[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
-    .embed-block[data-heading="3"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
-    .embed-page[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
-    .embed-page[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
-    .embed-page[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h4-fs) !important;
-    }
-    .embed-block[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
-    .embed-block[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
-    .embed-block[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
-    .embed-block[data-heading="4"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
-    .embed-page[data-heading="1"] :is(.ls-block h5, .editor-inner .h5.uniline-block),
-    .embed-page[data-heading="2"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
-    .embed-page[data-heading="3"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
-    .embed-page[data-heading="4"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
-      font-size: var(--kef-ae-h5-fs) !important;
-    }
-    .embed-block[data-heading="1"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
-    .embed-block[data-heading="2"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
-    .embed-block[data-heading="3"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
-    .embed-block[data-heading="4"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block),
-    .embed-block[data-heading="5"] :is(.ls-block :is(h1, h2, h3, h4, h5, h6), .editor-inner :is(.h1, .h2, .h3, .h4, .h5, .h6).uniline-block),
-    .embed-page[data-heading="1"] :is(.ls-block h6, .editor-inner .h6.uniline-block),
-    .embed-page[data-heading="2"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
-    .embed-page[data-heading="3"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
-    .embed-page[data-heading="4"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
-    .embed-page[data-heading="5"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block) {
-      font-size: var(--kef-ae-h6-fs) !important;
-    }
+      :root {
+        --kef-ae-h1-fs: 2em;
+        --kef-ae-h2-fs: 1.5em;
+        --kef-ae-h3-fs: 1.2em;
+        --kef-ae-h4-fs: 1em;
+        --kef-ae-h5-fs: 0.83em;
+        --kef-ae-h6-fs: 0.75em;
+      }
+      .embed-block[data-heading="1"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+      .embed-page[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
+        font-size: var(--kef-ae-h2-fs) !important;
+      }
+      .embed-block[data-heading="1"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
+      .embed-block[data-heading="2"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+      .embed-page[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+      .embed-page[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
+        font-size: var(--kef-ae-h3-fs) !important;
+      }
+      .embed-block[data-heading="1"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+      .embed-block[data-heading="2"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
+      .embed-block[data-heading="3"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+      .embed-page[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
+      .embed-page[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+      .embed-page[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
+        font-size: var(--kef-ae-h4-fs) !important;
+      }
+      .embed-block[data-heading="1"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
+      .embed-block[data-heading="2"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+      .embed-block[data-heading="3"] :is(.ls-block h2, .editor-inner .h2.uniline-block),
+      .embed-block[data-heading="4"] :is(.ls-block h1, .editor-inner .h1.uniline-block),
+      .embed-page[data-heading="1"] :is(.ls-block h5, .editor-inner .h5.uniline-block),
+      .embed-page[data-heading="2"] :is(.ls-block h4, .editor-inner .h4.uniline-block),
+      .embed-page[data-heading="3"] :is(.ls-block h3, .editor-inner .h3.uniline-block),
+      .embed-page[data-heading="4"] :is(.ls-block h2, .editor-inner .h2.uniline-block) {
+        font-size: var(--kef-ae-h5-fs) !important;
+      }
+      .embed-block[data-heading="1"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
+      .embed-block[data-heading="2"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
+      .embed-block[data-heading="3"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
+      .embed-block[data-heading="4"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block),
+      .embed-block[data-heading="5"] :is(.ls-block :is(h1, h2, h3, h4, h5, h6), .editor-inner :is(.h1, .h2, .h3, .h4, .h5, .h6).uniline-block),
+      .embed-page[data-heading="1"] :is(.ls-block h6, .editor-inner .h6.uniline-block),
+      .embed-page[data-heading="2"] :is(.ls-block :is(h5, h6), .editor-inner :is(.h5, .h6).uniline-block),
+      .embed-page[data-heading="3"] :is(.ls-block :is(h4, h5, h6), .editor-inner :is(.h4, .h5, .h6).uniline-block),
+      .embed-page[data-heading="4"] :is(.ls-block :is(h3, h4, h5, h6), .editor-inner :is(.h3, .h4, .h5, .h6).uniline-block),
+      .embed-page[data-heading="5"] :is(.ls-block :is(h2, h3, h4, h5, h6), .editor-inner :is(.h2, .h3, .h4, .h5, .h6).uniline-block) {
+        font-size: var(--kef-ae-h6-fs) !important;
+      }
 
-    .kef-ae-breadcrumb {
-      margin-left: 26px;
-      cursor: default;
-      margin-bottom: -0.25em;
-      padding-top: 5px;
-    }
-    .kef-ae-b-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 6px;
-      height: 6px;
-      background: var(--ls-primary-text-color);
-    }
-    .kef-ae-b-segs {
-      display: none;
-    }
-    .kef-ae-b-show {
-      display: inline;
-    }
-  `)
+      .kef-ae-breadcrumb {
+        margin-left: 26px;
+        cursor: default;
+        margin-bottom: -0.25em;
+        padding-top: 5px;
+      }
+      .kef-ae-b-toggle {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 6px;
+        height: 6px;
+        background: var(--ls-primary-text-color);
+      }
+      .kef-ae-b-segs {
+        display: none;
+      }
+      .kef-ae-b-show {
+        display: inline;
+      }
+    `,
+  })
 
   const appContainer = parent.document.getElementById("app-container")
   appContainer.addEventListener("click", onClick)
@@ -268,7 +272,10 @@ async function main() {
 
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
 
+  const favoriteOff = await favoriteHelper()
+
   logseq.beforeunload(() => {
+    favoriteOff?.()
     dbOff?.()
     settingsOff()
     observer.disconnect()
