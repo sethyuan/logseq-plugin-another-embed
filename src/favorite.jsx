@@ -42,6 +42,9 @@ export async function load() {
       }
       .kef-ae-fav-item-name {
         flex: 1 1 auto;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     `,
   })

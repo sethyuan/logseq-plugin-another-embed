@@ -60,8 +60,7 @@ export async function hash(text) {
 }
 
 export async function queryForSubItems(name) {
-  // TODO: also deal with tag ref hierarchies.
-  const children = (
+  const namespaceChildren = (
     await logseq.DB.datascriptQuery(
       `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
        :in $ ?name
@@ -71,5 +70,17 @@ export async function queryForSubItems(name) {
       `"${name}"`,
     )
   ).flat()
-  return children
+  if (namespaceChildren.length > 0) return namespaceChildren
+
+  const taggedPages = (
+    await logseq.DB.datascriptQuery(
+      `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
+       :in $ ?name
+       :where
+       [?t :block/original-name ?name]
+       [?p :block/tags ?t]]`,
+      `"${name}"`,
+    )
+  ).flat()
+  return taggedPages
 }

@@ -81,7 +81,9 @@ function SubList({ items, shown }) {
               ) : (
                 <span class="ui__icon tie tie-page kef-ae-fav-item-icon"></span>
               )}
-              <div class="kef-ae-fav-item-name">{displayName}</div>
+              <div class="kef-ae-fav-item-name" title={displayName}>
+                {displayName}
+              </div>
               {data && (
                 <FavArrow
                   expanded={data.expanded}
