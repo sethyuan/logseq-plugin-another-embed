@@ -48,10 +48,13 @@ function SubList({ items, shown }) {
   }, [shown, childrenData, items])
 
   function openPage(e, item) {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log("open page", item.name)
     if (e.shiftKey) {
       logseq.Editor.openInRightSidebar(item.uuid)
     } else {
-      logseq.Editor.scrollToBlockInPage(item.name, null, { replaceState: true })
+      logseq.Editor.scrollToBlockInPage(item.name)
     }
   }
 
