@@ -15,14 +15,15 @@ export async function load() {
       }
       .kef-ae-fav-arrow {
         flex: 0 0 auto;
-        padding-left: 10px;
+        padding: 4px 20px 4px 10px;
+        margin-right: -20px;
       }
       .kef-ae-fav-arrow svg {
-        transform: rotate(90deg);
+        transform: rotate(90deg) scale(0.8);
         transition: transform 0.04s linear;
       }
       .kef-ae-fav-arrow-expanded svg {
-        transform: rotate(0deg);
+        transform: rotate(0deg) scale(0.8);
       }
       .kef-ae-fav-item {
         display: flex;
@@ -36,6 +37,7 @@ export async function load() {
         background-color: var(--ls-quaternary-background-color);
       }
       .kef-ae-fav-item-icon {
+        flex: 0 0 auto;
         margin-right: 5px;
         width: 16px;
         text-align: center;
@@ -85,6 +87,12 @@ async function processFavorites() {
 async function injectList(fav, items) {
   const key = `kef-ae-f-${await hash(fav.dataset.ref)}`
 
+  const arrowContainer = fav.querySelector("a")
+  const arrow = arrowContainer.querySelector(".kef-ae-fav-arrow")
+  if (arrow != null) {
+    arrow.remove()
+  }
+
   logseq.provideUI({
     key,
     path: `.favorite-item[data-ref="${fav.dataset.ref}"]`,
@@ -92,16 +100,11 @@ async function injectList(fav, items) {
   })
 
   setTimeout(() => {
-    renderList(key, items, fav)
+    renderList(key, items, arrowContainer, fav)
   }, 0)
 }
 
-function renderList(key, items, fav) {
+function renderList(key, items, arrowContainer, fav) {
   const el = parent.document.getElementById(key)
-  const arrowContainer = fav.querySelector("a")
-  const arrow = arrowContainer.querySelector(".kef-ae-fav-arrow")
-  if (arrow != null) {
-    arrow.remove()
-  }
   render(<FavList items={items} arrowContainer={arrowContainer} />, el)
 }

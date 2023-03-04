@@ -1,5 +1,11 @@
 import { parse } from "./marked-renderer.js"
 
+let language
+
+export function setLanguage(val) {
+  language = val
+}
+
 export async function parseContent(content) {
   if (!content) return content
 
@@ -69,7 +75,11 @@ export async function queryForSubItems(name) {
        [?p :block/namespace ?t]]`,
       `"${name}"`,
     )
-  ).flat()
+  )
+    .flat()
+    .sort((a, b) =>
+      a["original-name"].localeCompare(b["original-name"], language),
+    )
   if (namespaceChildren.length > 0) return namespaceChildren
 
   const taggedPages = (
@@ -81,6 +91,11 @@ export async function queryForSubItems(name) {
        [?p :block/tags ?t]]`,
       `"${name}"`,
     )
-  ).flat()
+  )
+    .flat()
+    .slice(0, logseq.settings?.taggedPageLimit ?? 20)
+    .sort((a, b) =>
+      a["original-name"].localeCompare(b["original-name"], language),
+    )
   return taggedPages
 }

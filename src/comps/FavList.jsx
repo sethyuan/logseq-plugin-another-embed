@@ -50,7 +50,6 @@ function SubList({ items, shown }) {
   function openPage(e, item) {
     e.preventDefault()
     e.stopPropagation()
-    console.log("open page", item.name)
     if (e.shiftKey) {
       logseq.Editor.openInRightSidebar(item.uuid)
     } else {

@@ -3,7 +3,7 @@ import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Breadcrumb from "./comps/Breadcrumb"
 import { load as favoriteHelper } from "./favorite"
-import { parseContent } from "./libs/utils"
+import { parseContent, setLanguage } from "./libs/utils"
 import zhCN from "./translations/zh-CN.json"
 
 const HEADING_REGEX = /^#+ /
@@ -268,10 +268,20 @@ async function main() {
       default: false,
       description: t("Display the breadcrumb by default or not."),
     },
+    {
+      key: "taggedPageLimit",
+      type: "number",
+      default: 20,
+      description: t(
+        "Maximum number of tagged pages to display on each level for favorites.",
+      ),
+    },
   ])
 
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
 
+  const { preferredLanguage: lang } = await logseq.App.getUserConfigs()
+  setLanguage(lang)
   const favoriteOff = await favoriteHelper()
 
   logseq.beforeunload(() => {
