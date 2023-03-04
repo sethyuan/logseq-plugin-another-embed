@@ -66,12 +66,13 @@ export async function hash(text) {
 }
 
 export async function queryForSubItems(name) {
+  name = name.toLowerCase()
   const namespaceChildren = (
     await logseq.DB.datascriptQuery(
       `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
        :in $ ?name
        :where
-       [?t :block/original-name ?name]
+       [?t :block/name ?name]
        [?p :block/namespace ?t]]`,
       `"${name}"`,
     )
