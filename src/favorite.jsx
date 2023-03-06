@@ -55,20 +55,34 @@ export async function load() {
   const favoritesEl = parent.document.querySelector(
     "#left-sidebar ul.favorites",
   )
+  const recentsEl = parent.document.querySelector(
+    "#left-sidebar .recent .bd > ul",
+  )
 
-  const observer = new MutationObserver(async (mutationList) => {
+  const sidebarObserver = new MutationObserver(async (mutationList) => {
     if (leftSidebar.classList.contains("is-open")) {
       await processFavorites()
+      await processRecents()
     }
   })
-  observer.observe(favoritesEl, { childList: true })
-  observer.observe(leftSidebar, { attributeFilter: ["class"] })
+  sidebarObserver.observe(leftSidebar, { attributeFilter: ["class"] })
+  const favoritesObserver = new MutationObserver(async (mutationList) => {
+    await processFavorites()
+  })
+  favoritesObserver.observe(favoritesEl, { childList: true })
+  const recentsObserver = new MutationObserver(async (mutationList) => {
+    await processRecents()
+  })
+  recentsObserver.observe(recentsEl, { childList: true })
 
   await processFavorites()
+  await processRecents()
 
   // cleaning
   return () => {
-    observer.disconnect()
+    sidebarObserver.disconnect()
+    favoritesObserver.disconnect()
+    recentsObserver.disconnect()
   }
 }
 
@@ -84,10 +98,21 @@ async function processFavorites() {
   }
 }
 
-async function injectList(fav, items) {
-  const key = `kef-ae-f-${await hash(fav.dataset.ref)}`
+async function processRecents() {
+  const recents = parent.document.querySelectorAll(`#left-sidebar .recent-item`)
+  for (const recent of recents) {
+    const items = await queryForSubItems(recent.dataset.ref)
+    if (items?.length > 0) {
+      injectList(recent, items)
+    }
+  }
+}
 
-  const arrowContainer = fav.querySelector("a")
+async function injectList(el, items) {
+  const isFav = el.classList.contains("favorite-item")
+  const key = `kef-ae-${isFav ? "f" : "r"}-${await hash(el.dataset.ref)}`
+
+  const arrowContainer = el.querySelector("a")
   const arrow = arrowContainer.querySelector(".kef-ae-fav-arrow")
   if (arrow != null) {
     arrow.remove()
@@ -95,12 +120,14 @@ async function injectList(fav, items) {
 
   logseq.provideUI({
     key,
-    path: `.favorite-item[data-ref="${fav.dataset.ref}"]`,
+    path: `.${isFav ? "favorite" : "recent"}-item[data-ref="${
+      el.dataset.ref
+    }"]`,
     template: `<div id="${key}"></div>`,
   })
 
   setTimeout(() => {
-    renderList(key, items, arrowContainer, fav)
+    renderList(key, items, arrowContainer, el)
   }, 0)
 }
 
