@@ -5,5 +5,6 @@
   "Enable deletion helper.": "开启删除辅助。",
   "Enable breadcrumb for embeds.": "开启嵌入块的面包屑功能。",
   "Display the breadcrumb by default or not.": "是否默认显示面包屑。",
-  "Maximum number of tagged pages to display on each level for favorites.": "收藏中每级显示的标记页面的最大数量。"
+  "Maximum number of tagged pages to display on each level for favorites.": "收藏中每级显示的标记页面的最大数量。",
+  "Show arrows only when hovered.": "仅在鼠标移上去时显示箭头。"
 }

@@ -269,6 +269,12 @@ async function main() {
       description: t("Display the breadcrumb by default or not."),
     },
     {
+      key: "hoverArrow",
+      type: "boolean",
+      default: false,
+      description: t("Show arrows only when hovered."),
+    },
+    {
       key: "taggedPageLimit",
       type: "number",
       default: 20,

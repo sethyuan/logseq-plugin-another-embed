@@ -20,7 +20,7 @@ export async function load() {
         flex: 0 0 auto;
         padding: 4px 20px 4px 10px;
         margin-right: -20px;
-        opacity: 0;
+        opacity: ${logseq.settings?.hoverArrow ? 0 : 1};
         transition: opacity 0.3s;
       }
       :is(.favorite-item, .recent-item):hover > a > .kef-ae-fav-arrow,
