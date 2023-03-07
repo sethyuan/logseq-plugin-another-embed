@@ -17,6 +17,12 @@ export async function load() {
         flex: 0 0 auto;
         padding: 4px 20px 4px 10px;
         margin-right: -20px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      :is(.favorite-item, .recent-item):hover > a > .kef-ae-fav-arrow,
+      .kef-ae-fav-item:hover > .kef-ae-fav-arrow {
+        opacity: 1;
       }
       .kef-ae-fav-arrow svg {
         transform: rotate(90deg) scale(0.8);
