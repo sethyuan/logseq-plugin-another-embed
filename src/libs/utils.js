@@ -88,7 +88,7 @@ export async function queryForSubItems(name) {
       `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
        :in $ ?name
        :where
-       [?t :block/original-name ?name]
+       [?t :block/name ?name]
        [?p :block/tags ?t]]`,
       `"${name}"`,
     )
