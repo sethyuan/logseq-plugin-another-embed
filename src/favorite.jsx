@@ -83,7 +83,7 @@ export async function load() {
 
   const leftSidebar = parent.document.getElementById("left-sidebar")
   const favoritesEl = parent.document.querySelector(
-    "#left-sidebar ul.favorites",
+    "#left-sidebar .favorites .bd",
   )
   const recentsEl = parent.document.querySelector(
     "#left-sidebar .recent .bd > ul",
