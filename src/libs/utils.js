@@ -1,3 +1,4 @@
+import { partition } from "rambdax"
 import { parse } from "./marked-renderer.js"
 
 let language
@@ -67,6 +68,7 @@ export async function hash(text) {
 
 export async function queryForSubItems(name) {
   name = name.toLowerCase()
+
   const namespaceChildren = (
     await logseq.DB.datascriptQuery(
       `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
@@ -76,12 +78,13 @@ export async function queryForSubItems(name) {
        [?p :block/namespace ?t]]`,
       `"${name}"`,
     )
-  )
-    .flat()
-    .sort((a, b) =>
-      a["original-name"].localeCompare(b["original-name"], language),
-    )
-  if (namespaceChildren.length > 0) return namespaceChildren
+  ).flat()
+  namespaceChildren.forEach((p) => {
+    const originalName = p["original-name"]
+    const trimStart = originalName.lastIndexOf("/")
+    p.displayName =
+      trimStart > -1 ? originalName.substring(trimStart + 1) : originalName
+  })
 
   const taggedPages = (
     await logseq.DB.datascriptQuery(
@@ -92,11 +95,20 @@ export async function queryForSubItems(name) {
        [?p :block/tags ?t]]`,
       `"${name}"`,
     )
+  ).flat()
+
+  if (namespaceChildren.length === 0 && taggedPages.length === 0)
+    return namespaceChildren
+
+  const list = namespaceChildren.concat(taggedPages)
+  const [fixed, dynamic] = partition((p) => p.properties?.fixed != null, list)
+  fixed.sort((a, b) => a.properties.fixed - b.properties.fixed)
+  dynamic.sort((a, b) =>
+    a["original-name"].localeCompare(b["original-name"], language),
   )
-    .flat()
-    .slice(0, logseq.settings?.taggedPageLimit ?? 20)
-    .sort((a, b) =>
-      a["original-name"].localeCompare(b["original-name"], language),
-    )
-  return taggedPages
+  const result = fixed
+    .concat(dynamic)
+    .slice(0, logseq.settings?.taggedPageLimit ?? 30)
+
+  return result
 }

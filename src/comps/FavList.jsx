@@ -66,17 +66,22 @@ function SubList({ items, shown }) {
     setChildrenData(newChildrenData)
   }
 
+  function preventSideEffect(e) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   return (
-    <div class={cls("kef-ae-fav-list", shown && "kef-ae-fav-expanded")}>
+    <div
+      class={cls("kef-ae-fav-list", shown && "kef-ae-fav-expanded")}
+      onMouseDown={preventSideEffect}
+    >
       {items.map((item) => {
-        const itemName = item["original-name"]
-        const trimStart = itemName.lastIndexOf("/")
-        const displayName =
-          trimStart > -1 ? itemName.substring(trimStart + 1) : itemName
+        const displayName = item.displayName ?? item["original-name"]
         const data = childrenData?.[item.name]
 
         return (
-          <div key={itemName}>
+          <div key={item.name}>
             <div class="kef-ae-fav-item" onClick={(e) => openPage(e, item)}>
               {item.properties?.icon ? (
                 <div class="kef-ae-fav-item-icon">{item.properties?.icon}</div>

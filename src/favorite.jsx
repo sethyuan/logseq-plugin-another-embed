@@ -180,11 +180,11 @@ async function injectList(el, items) {
   })
 
   setTimeout(() => {
-    renderList(key, items, arrowContainer, el)
+    renderList(key, items, arrowContainer)
   }, 0)
 }
 
-function renderList(key, items, arrowContainer, fav) {
+function renderList(key, items, arrowContainer) {
   const el = parent.document.getElementById(key)
   render(<FavList items={items} arrowContainer={arrowContainer} />, el)
 }

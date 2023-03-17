@@ -277,7 +277,7 @@ async function main() {
     {
       key: "taggedPageLimit",
       type: "number",
-      default: 20,
+      default: 30,
       description: t(
         "Maximum number of tagged pages to display on each level for favorites.",
       ),
