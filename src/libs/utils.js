@@ -104,7 +104,10 @@ export async function queryForSubItems(name) {
   const [fixed, dynamic] = partition((p) => p.properties?.fixed != null, list)
   fixed.sort((a, b) => a.properties.fixed - b.properties.fixed)
   dynamic.sort((a, b) =>
-    a["original-name"].localeCompare(b["original-name"], language),
+    (a.displayName ?? a["original-name"]).localeCompare(
+      b.displayName ?? b["original-name"],
+      language,
+    ),
   )
   const result = fixed
     .concat(dynamic)
