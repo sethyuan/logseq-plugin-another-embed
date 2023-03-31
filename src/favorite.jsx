@@ -105,6 +105,11 @@ export async function load() {
   })
   recentsObserver.observe(recentsEl, { childList: true })
 
+  const graphChangeOff = logseq.App.onCurrentGraphChanged(async () => {
+    await processFavorites()
+    await processRecents()
+  })
+
   await processFavorites()
   await processRecents()
 
@@ -131,6 +136,7 @@ export async function load() {
 
   // cleaning
   return () => {
+    graphChangeOff()
     sidebarObserver.disconnect()
     favoritesObserver.disconnect()
     recentsObserver.disconnect()
