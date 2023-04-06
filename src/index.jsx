@@ -78,7 +78,7 @@ async function main() {
       }
 
       :root {
-        --kef-ae-h1-fs: 2em;
+        --kef-ae-h1-fs: 1.75em;
         --kef-ae-h2-fs: 1.5em;
         --kef-ae-h3-fs: 1.2em;
         --kef-ae-h4-fs: 1em;
