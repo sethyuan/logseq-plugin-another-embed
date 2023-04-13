@@ -487,8 +487,6 @@ function onClick(e) {
 async function refHelper({ blocks, txData, txMeta }) {
   if (txMeta?.outlinerOp === "deleteBlocks") {
     let deletedBlock = null
-    let currentBlock = null
-    let persistBlock = false
     for (const [e, a, v, , isAdded] of txData) {
       if (deletedBlock == null && a === "content" && !isAdded) {
         deletedBlock = blocks.find((b) => b.id === e)
@@ -496,41 +494,13 @@ async function refHelper({ blocks, txData, txMeta }) {
       }
       if (deletedBlock == null) continue
       if (a === "refs" && v === deletedBlock.id && !isAdded) {
-        if (currentBlock == null) {
-          currentBlock = await logseq.Editor.getCurrentBlock()
-        }
         const refBlock = blocks.find((b) => b.id === e)
         if (refBlock == null) continue
-        if (
-          currentBlock &&
-          !currentBlock.content &&
-          (parent.document.activeElement.value?.length > 0 ||
-            Array.isArray(currentBlock.children[0]))
-        ) {
-          persistBlock = true
-          logseq.Editor.updateBlock(
-            refBlock.uuid,
-            refBlock.content.replace(
-              `((${deletedBlock.uuid}))`,
-              `((${currentBlock.uuid}))`,
-            ),
-          )
-        } else {
-          logseq.Editor.updateBlock(
-            refBlock.uuid,
-            refBlock.content.replace(`((${deletedBlock.uuid}))`, `((missing))`),
-          )
-        }
+        logseq.Editor.updateBlock(
+          refBlock.uuid,
+          refBlock.content.replace(`((${deletedBlock.uuid}))`, `((missing))`),
+        )
       }
-    }
-    if (persistBlock && currentBlock) {
-      // Found refs to the deleted block
-      await logseq.Editor.exitEditingMode()
-      await logseq.Editor.updateBlock(
-        currentBlock.uuid,
-        deletedBlock.content.replace(/^id:: .+/m, `id:: ${currentBlock.uuid}`),
-      )
-      await logseq.Editor.editBlock(currentBlock.uuid, { pos: 0 })
     }
   } else if (txMeta?.outlinerOp === "insertBlocks") {
     let newBlock = null
