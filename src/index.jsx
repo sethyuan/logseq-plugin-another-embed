@@ -17,7 +17,7 @@ async function main() {
   logseq.provideStyle({
     key: "kef-ae",
     style: `
-      ::after {
+      :root {
         --kef-ae-handle-color: ${rootStyles.getPropertyValue(
           "--ls-active-secondary-color",
         )};
@@ -62,11 +62,7 @@ async function main() {
       span[data-ref=".embed-children"] + .embed-block {
         position: relative;
       }
-      span[data-ref=".embed"] + .embed-block:hover::after,
-      span[data-ref=".embed-children"] + .embed-block:hover::after,
-      span[data-ref=".embed"] + .embed-page:hover::after,
-      span[data-ref=".embed-children"] + .embed-page:hover::after {
-        content: "";
+      .kef-ae-control-bar {
         position: absolute;
         top: 10px;
         left: -7px;
@@ -75,6 +71,7 @@ async function main() {
         background: var(--kef-ae-handle-color);
         cursor: pointer;
         z-index: 2;
+        opacity: 0;
       }
 
       :root {
@@ -148,9 +145,6 @@ async function main() {
       }
     `,
   })
-
-  const appContainer = parent.document.getElementById("app-container")
-  appContainer.addEventListener("click", onClick)
 
   logseq.Editor.registerSlashCommand("Alternative embed", async () => {
     await logseq.Editor.insertAtEditingCursor(`[[.embed]]{{embed }}`)
@@ -295,7 +289,6 @@ async function main() {
     dbOff?.()
     settingsOff()
     observer.disconnect()
-    appContainer.removeEventListener("click", onClick)
   })
 
   console.log("#another-embed loaded")
@@ -335,18 +328,6 @@ function injectGlobalStyles() {
         }
         .embed-block {
           position: relative;
-        }
-        .embed-block:hover::after,
-        .embed-page:hover::after {
-          content: "";
-          position: absolute;
-          top: 10px;
-          left: -7px;
-          width: 14px;
-          height: calc(100% - 10px - 10px);
-          background: var(--kef-ae-handle-color);
-          cursor: pointer;
-          z-index: 2;
         }
       `,
     })
@@ -421,6 +402,13 @@ function processEmbeds(embeds) {
       }
     }
 
+    const controlBar = parent.document.createElement("div")
+    controlBar.classList.add("kef-ae-control-bar")
+    controlBar.addEventListener("click", onClick)
+    controlBar.addEventListener("mouseenter", onMouseEnter)
+    controlBar.addEventListener("mouseleave", onMouseLeave)
+    embed.appendChild(controlBar)
+
     if (logseq.settings?.breadcrumb) {
       embed.style.display = "flex"
       embed.style.flexDirection = "column"
@@ -456,6 +444,13 @@ function reverseEmbedsProcessing(embeds) {
     if (blockContentWrapper?.previousElementSibling) {
       blockContentWrapper.previousElementSibling.style.display = ""
     }
+    const controlBar = embed.querySelector(".kef-ae-control-bar")
+    if (controlBar) {
+      controlBar.removeEventListener("mouseenter", onMouseEnter)
+      controlBar.removeEventListener("mouseleave", onMouseLeave)
+      controlBar.removeEventListener("click", onClick)
+      controlBar.remove()
+    }
   }
 }
 
@@ -466,22 +461,21 @@ function cursorBack(spaces) {
 }
 
 function onClick(e) {
-  if (
-    (e.target.classList.contains("embed-page") ||
-      e.target.classList.contains("embed-block")) &&
-    e.offsetX >= -7 &&
-    e.offsetX <= 7 &&
-    e.offsetY >= 10 &&
-    e.offsetY <= e.target.clientHeight - 10
-  ) {
-    e.preventDefault()
-    const blockContentWrapper = e.target.closest(".block-content-wrapper")
-    if (blockContentWrapper.previousElementSibling.style.display) {
-      blockContentWrapper.previousElementSibling.style.display = ""
-    } else {
-      blockContentWrapper.previousElementSibling.style.display = "none"
-    }
+  e.preventDefault()
+  const blockContentWrapper = e.target.closest(".block-content-wrapper")
+  if (blockContentWrapper.previousElementSibling.style.display) {
+    blockContentWrapper.previousElementSibling.style.display = ""
+  } else {
+    blockContentWrapper.previousElementSibling.style.display = "none"
   }
+}
+
+function onMouseEnter(e) {
+  e.target.style.opacity = 1
+}
+
+function onMouseLeave(e) {
+  e.target.style.opacity = null
 }
 
 async function refHelper({ blocks, txData, txMeta }) {
