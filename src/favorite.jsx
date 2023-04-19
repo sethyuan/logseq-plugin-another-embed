@@ -83,19 +83,12 @@ export async function load() {
 
   const leftSidebar = parent.document.getElementById("left-sidebar")
   const favoritesEl = parent.document.querySelector(
-    "#left-sidebar .favorites .bd",
+    "#left-sidebar ul.favorites",
   )
   const recentsEl = parent.document.querySelector(
     "#left-sidebar .recent .bd > ul",
   )
 
-  const sidebarObserver = new MutationObserver(async (mutationList) => {
-    if (leftSidebar.classList.contains("is-open")) {
-      await processFavorites()
-      await processRecents()
-    }
-  })
-  sidebarObserver.observe(leftSidebar, { attributeFilter: ["class"] })
   const favoritesObserver = new MutationObserver(async (mutationList) => {
     await processFavorites()
   })
@@ -104,6 +97,7 @@ export async function load() {
     await processRecents()
   })
   recentsObserver.observe(recentsEl, { childList: true })
+  const transactionOff = logseq.DB.onChanged(onTransaction)
 
   const graphChangeOff = logseq.App.onCurrentGraphChanged(async () => {
     await processFavorites()
@@ -137,10 +131,9 @@ export async function load() {
   // cleaning
   return () => {
     graphChangeOff()
-    sidebarObserver.disconnect()
+    transactionOff()
     favoritesObserver.disconnect()
     recentsObserver.disconnect()
-
     dragHandle?.removeEventListener("pointerdown", onPointerDown)
   }
 }
@@ -177,13 +170,15 @@ async function injectList(el, items) {
     arrow.remove()
   }
 
-  logseq.provideUI({
-    key,
-    path: `.${isFav ? "favorite" : "recent"}-item[data-ref="${
-      el.dataset.ref
-    }"]`,
-    template: `<div id="${key}"></div>`,
-  })
+  if (parent.document.getElementById(key) == null) {
+    logseq.provideUI({
+      key,
+      path: `.${isFav ? "favorite" : "recent"}-item[data-ref="${
+        el.dataset.ref
+      }"]`,
+      template: `<div id="${key}"></div>`,
+    })
+  }
 
   setTimeout(() => {
     renderList(key, items, arrowContainer)
@@ -193,6 +188,13 @@ async function injectList(el, items) {
 function renderList(key, items, arrowContainer) {
   const el = parent.document.getElementById(key)
   render(<FavList items={items} arrowContainer={arrowContainer} />, el)
+}
+
+async function onTransaction({ blocks, txData, txMeta }) {
+  if (txData.some(([_e, attr]) => attr === "tags" || attr === "originalName")) {
+    await processFavorites()
+    await processRecents()
+  }
 }
 
 function onPointerDown(e) {
