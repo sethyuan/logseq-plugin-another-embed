@@ -479,7 +479,40 @@ function onMouseLeave(e) {
 }
 
 async function refHelper({ blocks, txData, txMeta }) {
-  if (txMeta?.outlinerOp === "deleteBlocks") {
+  if (
+    txMeta &&
+    txMeta.outlinerOp === "deleteBlock" &&
+    txMeta.concatData &&
+    txMeta.concatData.lastEditBlock &&
+    txMeta.concatData["end?"] !== true &&
+    txMeta["undo?"] !== true
+  ) {
+    // delete via backspace
+    const deletedBlock = blocks.find(
+      (b) => b.uuid === txMeta.concatData.lastEditBlock,
+    )
+    let currentBlock = null
+    for (const [e, a, v, , isAdded] of txData) {
+      if (a === "refs" && v === deletedBlock.id && !isAdded) {
+        if (currentBlock == null) {
+          currentBlock = await logseq.Editor.getCurrentBlock()
+        }
+        const refBlock = blocks.find((b) => b.id === e)
+        if (refBlock == null) continue
+        logseq.Editor.updateBlock(
+          refBlock.uuid,
+          refBlock.content.replace(
+            `((${deletedBlock.uuid}))`,
+            `((${currentBlock.uuid}))`,
+          ),
+        )
+      }
+    }
+  } else if (
+    txMeta?.outlinerOp === "deleteBlocks" &&
+    txMeta?.["undo?"] !== true
+  ) {
+    // delete via cut
     let deletedBlock = null
     for (const [e, a, v, , isAdded] of txData) {
       if (deletedBlock == null && a === "content" && !isAdded) {
