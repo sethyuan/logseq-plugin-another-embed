@@ -46,3 +46,9 @@ The font size of each heading level can be set with the following CSS variables:
   --kef-ae-h6-fs: 0.75em;
 }
 ```
+
+## Buy me a coffee
+
+If you think the software I have developed is helpful to you and would like to give recognition and support, you may buy me a coffee using following link. Thank you for your support and attention.
+
+<a href="https://www.buymeacoffee.com/sethyuan" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
