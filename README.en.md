@@ -20,9 +20,9 @@ The plugin relies heavily on Logseq's DOM structure, so it is version sensitive.
 
 https://user-images.githubusercontent.com/3410293/202061912-7a1495ba-09af-4657-9442-c29d6d5abb55.mp4
 
-https://user-images.githubusercontent.com/3410293/218662951-59a99b70-b86c-476b-8389-b388a147a7c9.mp4
-
 https://user-images.githubusercontent.com/3410293/220614901-4aa9bb01-414a-4eb2-bd37-5428edc0a4e8.mp4
+
+https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/32b2a19e-19b3-4113-8fee-f2a445d151cc
 
 ## Style Customization
 
