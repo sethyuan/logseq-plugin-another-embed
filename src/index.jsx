@@ -8,6 +8,8 @@ import zhCN from "./translations/zh-CN.json"
 
 const HEADING_REGEX = /^#+ /
 
+let pageRefObserver = null
+
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
@@ -268,6 +270,14 @@ async function main() {
         "Maximum number of tagged pages to display on each level for favorites.",
       ),
     },
+    {
+      key: "showPageRefIcon",
+      type: "boolean",
+      default: true,
+      description: t(
+        "Whether or not to show the page's icon (if any) in a page ref.",
+      ),
+    },
   ])
 
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
@@ -279,6 +289,7 @@ async function main() {
   logseq.beforeunload(() => {
     favoriteOff?.()
     settingsOff()
+    pageRefObserver?.disconnect()
     observer.disconnect()
   })
 
@@ -287,6 +298,24 @@ async function main() {
 
 function onSettingsChanged() {
   injectGlobalStyles()
+
+  pageRefObserver?.disconnect()
+  if (logseq.settings?.showPageRefIcon) {
+    pageRefObserver = new MutationObserver(async (mutationList) => {
+      for (const mutation of mutationList) {
+        for (const node of mutation.addedNodes) {
+          if (node.querySelectorAll) {
+            await processPageRefs(node)
+          }
+        }
+      }
+    })
+    pageRefObserver.observe(parent.document.body, {
+      subtree: true,
+      childList: true,
+    })
+    processPageRefs(parent.document.getElementById("main-content-container"))
+  }
 }
 
 function injectGlobalStyles() {
@@ -497,6 +526,24 @@ async function renderBreadcrumb(embed, blockId, elId) {
   }
 
   render(<Breadcrumb segments={path} />, root)
+}
+
+async function processPageRefs(node) {
+  const pageRefs = Array.from(node.querySelectorAll(".page-ref"))
+  if (pageRefs.length === 0) return
+  await Promise.allSettled(
+    pageRefs.map(async (pageRef) => {
+      const pageName = pageRef.dataset.ref
+      const page = await logseq.Editor.getPage(pageName)
+      const icon = page.properties?.icon
+      if (icon) {
+        const iconEl = parent.document.createElement("span")
+        iconEl.style.marginRight = "0.3ch"
+        iconEl.innerHTML = icon
+        pageRef.parentElement.insertBefore(iconEl, pageRef)
+      }
+    }),
+  )
 }
 
 logseq.ready(main).catch(console.error)

@@ -6,5 +6,6 @@
   "Enable breadcrumb for embeds.": "开启嵌入块的面包屑功能。",
   "Display the breadcrumb by default or not.": "是否默认显示面包屑。",
   "Maximum number of tagged pages to display on each level for favorites.": "收藏中每级显示的标记页面的最大数量。",
-  "Show arrows only when hovered.": "仅在鼠标移上去时显示箭头。"
+  "Show arrows only when hovered.": "仅在鼠标移上去时显示箭头。",
+  "Whether or not to show the page's icon (if any) in a page ref.": "是否在页面引用中显示页面图标（如有）。"
 }
