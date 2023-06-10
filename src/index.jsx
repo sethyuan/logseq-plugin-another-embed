@@ -257,6 +257,14 @@ async function main() {
       description: t("Display the breadcrumb by default or not."),
     },
     {
+      key: "hierarchyProperty",
+      type: "string",
+      default: "tags",
+      description: t(
+        "It controls which property is used to decide a tag's hierarchy.",
+      ),
+    },
+    {
       key: "hoverArrow",
       type: "boolean",
       default: false,
@@ -533,11 +541,23 @@ async function processPageRefs(node) {
   if (pageRefs.length === 0) return
   await Promise.allSettled(
     pageRefs.map(async (pageRef) => {
+      if (
+        pageRef.previousElementSibling?.classList.contains(
+          "kef-ae-pageref-icon",
+        )
+      )
+        return
       const pageName = pageRef.dataset.ref
       const page = await logseq.Editor.getPage(pageName)
       const icon = page.properties?.icon
-      if (icon) {
+      if (
+        icon &&
+        !pageRef.previousElementSibling?.classList.contains(
+          "kef-ae-pageref-icon",
+        )
+      ) {
         const iconEl = parent.document.createElement("span")
+        iconEl.classList.add("kef-ae-pageref-icon")
         iconEl.style.marginRight = "0.3ch"
         iconEl.innerHTML = icon
         pageRef.parentElement.insertBefore(iconEl, pageRef)

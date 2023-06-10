@@ -185,7 +185,16 @@ function renderList(key, items, arrowContainer) {
 }
 
 async function onTransaction({ blocks, txData, txMeta }) {
-  if (txData.some(([_e, attr]) => attr === "tags" || attr === "originalName")) {
+  const hierarchyProperty = logseq.settings?.hierarchyProperty ?? "tags"
+  if (
+    txData.some(
+      ([_e, attr, val]) =>
+        (hierarchyProperty === "tags"
+          ? attr === "tags"
+          : attr === "properties" && val[hierarchyProperty]) ||
+        attr === "originalName",
+    )
+  ) {
     await processFavorites()
     await processRecents()
   }

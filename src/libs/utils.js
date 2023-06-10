@@ -86,13 +86,22 @@ export async function queryForSubItems(name) {
       trimStart > -1 ? originalName.substring(trimStart + 1) : originalName
   })
 
+  const hierarchyProperty = logseq.settings?.hierarchyProperty ?? "tags"
   const taggedPages = (
     await logseq.DB.datascriptQuery(
-      `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
-       :in $ ?name
-       :where
-       [?t :block/name ?name]
-       [?p :block/tags ?t]]`,
+      hierarchyProperty === "tags"
+        ? `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
+            :in $ ?name
+            :where
+            [?t :block/name ?name]
+            [?p :block/tags ?t]]`
+        : `[:find (pull ?p [:block/name :block/original-name :block/uuid :block/properties])
+            :in $ ?name
+            :where
+            [?p :block/original-name]
+            [?p :block/properties ?props]
+            [(get ?props :${hierarchyProperty}) ?v]
+            (or [(= ?v ?name)] [(contains? ?v ?name)])]`,
       `"${name}"`,
     )
   ).flat()
