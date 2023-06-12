@@ -267,7 +267,7 @@ async function main() {
     {
       key: "filterIcon",
       type: "string",
-      default: "🔎",
+      default: "🔍",
       description: t("Define an icon for quick filters."),
     },
     {

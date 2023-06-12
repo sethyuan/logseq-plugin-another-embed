@@ -37,8 +37,13 @@ function SubList({ items, shown }) {
       ;(async () => {
         const data = {}
         for (const item of items) {
-          if (item.subitems) {
-            data[item.name] = { expanded: false, items: item.subitems }
+          if (item.filters) {
+            if (item.subitems) {
+              data[item.displayName] = {
+                expanded: false,
+                items: Object.values(item.subitems),
+              }
+            }
           } else {
             const subitems = await queryForSubItems(item["original-name"])
             if (subitems?.length > 0) {
@@ -55,12 +60,14 @@ function SubList({ items, shown }) {
     e.preventDefault()
     e.stopPropagation()
     if (item.filters) {
-      const page = await logseq.Editor.getPage(item.name)
-      await logseq.Editor.upsertBlockProperty(
-        page.uuid,
-        "filters",
-        `{${item.filters.map((filter) => `"${filter}" true`).join(", ")}}`,
+      let content = (await logseq.Editor.getBlock(item.uuid)).content.replace(
+        /\n*^filters:: .*\n*/m,
+        "",
       )
+      content += `\nfilters:: ${`{${item.filters
+        .map((filter) => `"${filter.toLowerCase()}" true`)
+        .join(", ")}}`}`
+      await logseq.Editor.updateBlock(item.uuid, content)
     }
     if (e.shiftKey) {
       logseq.Editor.openInRightSidebar(item.uuid)
@@ -90,7 +97,9 @@ function SubList({ items, shown }) {
     >
       {items.map((item) => {
         const displayName = item.displayName ?? item["original-name"]
-        const data = childrenData?.[item.name]
+        const data = item.filters
+          ? childrenData?.[item.displayName]
+          : childrenData?.[item.name]
 
         return (
           <div key={item.name}>
@@ -105,12 +114,19 @@ function SubList({ items, shown }) {
                 <span class="ui__icon tie tie-page kef-ae-fav-item-icon"></span>
               )}
               <div class="kef-ae-fav-item-name" title={displayName}>
-                {displayName}
+                {item.filters &&
+                displayName.toLowerCase().startsWith(`${item.name}/`)
+                  ? displayName.substring(item.name.length + 1)
+                  : displayName}
               </div>
               {data && (
                 <FavArrow
                   expanded={data.expanded}
-                  onToggle={(e) => toggleChild(e, item.name)}
+                  onToggle={(e) =>
+                    item.filters
+                      ? toggleChild(e, item.displayName)
+                      : toggleChild(e, item.name)
+                  }
                 />
               )}
             </div>

@@ -106,34 +106,7 @@ export async function queryForSubItems(name) {
     )
   ).flat()
 
-  // TODO
-  const page = await logseq.Editor.getPage(name)
-  const quickFiltersStr = JSON.parse(
-    (await logseq.Editor.getBlockProperty(page.uuid, "quick-filters")) ?? '""',
-  )
-  const filters = quickFiltersStr
-    .match(/(?:\[\[[^\]]+\]\]\s*)+\d*/g)
-    .map((filterStr) => {
-      const matches = Array.from(
-        filterStr.matchAll(/\[\[([^\]]+)\]\]\s*|(\d+)/g),
-      )
-      const fixed = matches[matches.length - 1][2]
-        ? +matches[matches.length - 1][2]
-        : null
-      const filters = (
-        fixed == null ? matches : matches.slice(0, matches.length - 1)
-      ).map((m) => m[1])
-      const ret = {
-        name: page.name,
-        displayName: filters[0],
-        uuid: page.uuid,
-        properties: fixed == null ? {} : { fixed },
-        filters: [name, filters[0]],
-        subitems: [],
-      }
-      return ret
-    })
-  const quickFilters = []
+  const quickFilters = await getQuickFilters(name)
 
   if (
     namespaceChildren.length === 0 &&
@@ -156,4 +129,70 @@ export async function queryForSubItems(name) {
     .slice(0, logseq.settings?.taggedPageLimit ?? 30)
 
   return result
+}
+
+async function getQuickFilters(name) {
+  const uuid = (
+    await logseq.DB.datascriptQuery(
+      `[:find (pull ?b [:block/uuid])
+     :in $ ?name
+     :where
+     [?p :block/name ?name]
+     [?b :block/page ?p]
+     [?b :block/pre-block? true]]`,
+      `"${name}"`,
+    )
+  ).flat()[0]?.uuid
+  if (uuid == null) return []
+
+  const quickFiltersStr = JSON.parse(
+    (await logseq.Editor.getBlockProperty(uuid, "quick-filters")) ?? '""',
+  )
+  if (!quickFiltersStr) return []
+
+  const groups = quickFiltersStr.match(/(?:\[\[[^\]]+\]\]\s*)+\d*/g)
+  if (groups == null) return []
+
+  const quickFilters = groups
+    .map((filterStr) => {
+      const matches = Array.from(
+        filterStr.matchAll(/\[\[([^\]]+)\]\]\s*|(\d+)/g),
+      )
+      const fixed = matches[0][2] ? +matches[0][2] : null
+      const tags = (fixed == null ? matches : matches.slice(1)).map((m) => m[1])
+      return [tags, fixed]
+    })
+    .filter(([tags, fixed]) => tags.length > 0)
+    .reduce((filter, [tags, fixed]) => {
+      if (filter[tags[0]] == null) {
+        filter[tags[0]] = {}
+        if (fixed != null) {
+          filter[tags[0]].properties = { fixed }
+        }
+      }
+      constructFilter(filter[tags[0]], name, uuid, tags, [])
+      return filter
+    }, {})
+
+  return Object.values(quickFilters)
+}
+
+function constructFilter(obj, name, uuid, tags, path) {
+  if (obj.displayName == null) {
+    obj.name = name
+    obj.uuid = uuid
+    obj.displayName = tags[0]
+    obj.filters = [...path, tags[0]]
+  }
+
+  tags = tags.slice(1)
+  if (tags.length === 0) return
+
+  if (obj.subitems == null) {
+    obj.subitems = {}
+  }
+  if (obj.subitems[tags[0]] == null) {
+    obj.subitems[tags[0]] = {}
+  }
+  constructFilter(obj.subitems[tags[0]], name, uuid, tags, obj.filters)
 }
