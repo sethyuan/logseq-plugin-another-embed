@@ -37,9 +37,13 @@ function SubList({ items, shown }) {
       ;(async () => {
         const data = {}
         for (const item of items) {
-          const subitems = await queryForSubItems(item["original-name"])
-          if (subitems?.length > 0) {
-            data[item.name] = { expanded: false, items: subitems }
+          if (item.subitems) {
+            data[item.name] = { expanded: false, items: item.subitems }
+          } else {
+            const subitems = await queryForSubItems(item["original-name"])
+            if (subitems?.length > 0) {
+              data[item.name] = { expanded: false, items: subitems }
+            }
           }
         }
         setChildrenData(data)
@@ -47,9 +51,17 @@ function SubList({ items, shown }) {
     }
   }, [shown, childrenData, items])
 
-  function openPage(e, item) {
+  async function openPage(e, item) {
     e.preventDefault()
     e.stopPropagation()
+    if (item.filters) {
+      const page = await logseq.Editor.getPage(item.name)
+      await logseq.Editor.upsertBlockProperty(
+        page.uuid,
+        "filters",
+        `{${item.filters.map((filter) => `"${filter}" true`).join(", ")}}`,
+      )
+    }
     if (e.shiftKey) {
       logseq.Editor.openInRightSidebar(item.uuid)
     } else {
@@ -83,7 +95,11 @@ function SubList({ items, shown }) {
         return (
           <div key={item.name}>
             <div class="kef-ae-fav-item" onClick={(e) => openPage(e, item)}>
-              {item.properties?.icon ? (
+              {item.filters ? (
+                <div class="kef-ae-fav-item-icon">
+                  {logseq.settings?.filterIcon ?? "🔎"}
+                </div>
+              ) : item.properties?.icon ? (
                 <div class="kef-ae-fav-item-icon">{item.properties?.icon}</div>
               ) : (
                 <span class="ui__icon tie tie-page kef-ae-fav-item-icon"></span>

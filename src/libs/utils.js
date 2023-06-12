@@ -106,10 +106,43 @@ export async function queryForSubItems(name) {
     )
   ).flat()
 
-  if (namespaceChildren.length === 0 && taggedPages.length === 0)
+  // TODO
+  const page = await logseq.Editor.getPage(name)
+  const quickFiltersStr = JSON.parse(
+    (await logseq.Editor.getBlockProperty(page.uuid, "quick-filters")) ?? '""',
+  )
+  const filters = quickFiltersStr
+    .match(/(?:\[\[[^\]]+\]\]\s*)+\d*/g)
+    .map((filterStr) => {
+      const matches = Array.from(
+        filterStr.matchAll(/\[\[([^\]]+)\]\]\s*|(\d+)/g),
+      )
+      const fixed = matches[matches.length - 1][2]
+        ? +matches[matches.length - 1][2]
+        : null
+      const filters = (
+        fixed == null ? matches : matches.slice(0, matches.length - 1)
+      ).map((m) => m[1])
+      const ret = {
+        name: page.name,
+        displayName: filters[0],
+        uuid: page.uuid,
+        properties: fixed == null ? {} : { fixed },
+        filters: [name, filters[0]],
+        subitems: [],
+      }
+      return ret
+    })
+  const quickFilters = []
+
+  if (
+    namespaceChildren.length === 0 &&
+    taggedPages.length === 0 &&
+    quickFilters.length === 0
+  )
     return namespaceChildren
 
-  const list = namespaceChildren.concat(taggedPages)
+  const list = namespaceChildren.concat(taggedPages).concat(quickFilters)
   const [fixed, dynamic] = partition((p) => p.properties?.fixed != null, list)
   fixed.sort((a, b) => a.properties.fixed - b.properties.fixed)
   dynamic.sort((a, b) =>

@@ -265,6 +265,12 @@ async function main() {
       ),
     },
     {
+      key: "filterIcon",
+      type: "string",
+      default: "🔎",
+      description: t("Define an icon for quick filters."),
+    },
+    {
       key: "hoverArrow",
       type: "boolean",
       default: false,

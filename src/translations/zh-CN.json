@@ -8,5 +8,6 @@
   "Maximum number of tagged pages to display on each level for favorites.": "收藏中每级显示的标记页面的最大数量。",
   "Show arrows only when hovered.": "仅在鼠标移上去时显示箭头。",
   "Whether or not to show the page's icon (if any) in a page ref.": "是否在页面引用中显示页面图标（如有）。",
-  "It controls which property is used to decide a tag's hierarchy.": "使用哪个属性作为判断标签结构的依据。"
+  "It controls which property is used to decide a tag's hierarchy.": "使用哪个属性作为判断标签结构的依据。",
+  "Define an icon for quick filters.": "给快速过滤器设置一个图标。"
 }
