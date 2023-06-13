@@ -192,7 +192,7 @@ async function onTransaction({ blocks, txData, txMeta }) {
         (hierarchyProperty === "tags"
           ? attr === "tags"
           : attr === "properties" &&
-            (val[hierarchyProperty] || val["quick-filters"])) ||
+            (val[hierarchyProperty] || val.quickFilters)) ||
         attr === "originalName",
     )
   ) {
