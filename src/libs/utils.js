@@ -150,7 +150,7 @@ async function getQuickFilters(name) {
   )
   if (!quickFiltersStr) return []
 
-  const groups = quickFiltersStr.match(/(?:\[\[[^\]]+\]\]\s*)+\d*/g)
+  const groups = quickFiltersStr.match(/(?:\d+\s+)?(?:\[\[[^\]]+\]\]\s*)+/g)
   if (groups == null) return []
 
   const quickFilters = groups
