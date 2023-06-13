@@ -222,7 +222,8 @@ function needsProcessing(txData) {
   }
   if (
     (!oldProperty && !newProperty && !oldQuickFilters && !newQuickFilters) ||
-    (oldProperty === newProperty && oldQuickFilters === newQuickFilters)
+    (oldProperty?.toString() === newProperty?.toString() &&
+      oldQuickFilters === newQuickFilters)
   )
     return false
   return true
