@@ -82,17 +82,21 @@ export async function load() {
   })
 
   const leftSidebar = parent.document.getElementById("left-sidebar")
-  const favoritesEl = parent.document.querySelector(
-    "#left-sidebar ul.favorites",
-  )
+  const favoritesEl = parent.document.querySelector("#left-sidebar .favorites")
   const recentsEl = parent.document.querySelector(
     "#left-sidebar .recent .bd > ul",
   )
 
   const favoritesObserver = new MutationObserver(async (mutationList) => {
-    await processFavorites()
+    const mutation = mutationList[0]
+    if (
+      mutation?.target.classList?.contains("bd") ||
+      mutation?.target.classList?.contains("favorites")
+    ) {
+      await processFavorites()
+    }
   })
-  favoritesObserver.observe(favoritesEl, { childList: true })
+  favoritesObserver.observe(favoritesEl, { childList: true, subtree: true })
   const recentsObserver = new MutationObserver(async (mutationList) => {
     await processRecents()
   })
@@ -186,19 +190,42 @@ function renderList(key, items, arrowContainer) {
 
 async function onTransaction({ blocks, txData, txMeta }) {
   const hierarchyProperty = logseq.settings?.hierarchyProperty ?? "tags"
-  if (
-    txData.some(
-      ([_e, attr, val]) =>
-        (hierarchyProperty === "tags"
-          ? attr === "tags"
-          : attr === "properties" &&
-            (val[hierarchyProperty] || val.quickFilters)) ||
-        attr === "originalName",
-    )
-  ) {
+  if (needsProcessing(txData)) {
     await processFavorites()
     await processRecents()
   }
+}
+
+function needsProcessing(txData) {
+  const hierarchyProperty = logseq.settings?.hierarchyProperty ?? "tags"
+  let oldProperty, newProperty
+  let oldQuickFilters, newQuickFilters
+  for (const [_e, attr, val, _tx, removed] of txData) {
+    if (attr === "originalName") return true
+    if (hierarchyProperty === "tags" && attr === "tags") return true
+    if (attr === "properties") {
+      if (val[hierarchyProperty]) {
+        if (removed) {
+          oldProperty = val[hierarchyProperty]
+        } else {
+          newProperty = val[hierarchyProperty]
+        }
+      }
+      if (val.quickFilters) {
+        if (removed) {
+          oldQuickFilters = val.quickFilters
+        } else {
+          newQuickFilters = val.quickFilters
+        }
+      }
+    }
+  }
+  if (
+    (!oldProperty && !newProperty && !oldQuickFilters && !newQuickFilters) ||
+    (oldProperty === newProperty && oldQuickFilters === newQuickFilters)
+  )
+    return false
+  return true
 }
 
 function onPointerDown(e) {
