@@ -59,20 +59,37 @@ function SubList({ items, shown }) {
   async function openPage(e, item) {
     e.preventDefault()
     e.stopPropagation()
+
     if (item.filters) {
-      let content = (await logseq.Editor.getBlock(item.uuid)).content.replace(
-        /\n*^filters:: .*\n*/m,
-        "",
-      )
+      let content = (
+        await logseq.Editor.getBlock(item.blockUUID)
+      ).content.replace(/\n*^filters:: .*\n*/m, "")
       content += `\nfilters:: ${`{${item.filters
         .map((filter) => `"${filter.toLowerCase()}" true`)
         .join(", ")}}`}`
-      await logseq.Editor.updateBlock(item.uuid, content)
+      await logseq.Editor.updateBlock(item.blockUUID, content)
     }
-    if (e.shiftKey) {
-      logseq.Editor.openInRightSidebar(item.uuid)
-    } else {
-      logseq.Editor.scrollToBlockInPage(item.name)
+
+    const url = new URL(`http://localhost${parent.location.hash.substring(6)}`)
+    const isAlreadyOnPage =
+      decodeURIComponent(url.pathname.substring(1)) === item.name
+    if (!isAlreadyOnPage) {
+      if (e.shiftKey) {
+        logseq.Editor.openInRightSidebar(item.uuid ?? item.pageUUID)
+      } else {
+        logseq.Editor.scrollToBlockInPage(item.name)
+      }
+    } else if (item.filters) {
+      if (e.shiftKey) {
+        // NOTE: right sidebar refreshing is not possible yet.
+        logseq.Editor.openInRightSidebar(item.uuid ?? item.pageUUID)
+      } else {
+        // HACK: remove this hack later when Logseq's responsive refresh is fixed.
+        logseq.Editor.scrollToBlockInPage(item.blockUUID)
+        setTimeout(() => {
+          logseq.Editor.scrollToBlockInPage(item.name)
+        }, 50)
+      }
     }
   }
 

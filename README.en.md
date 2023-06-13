@@ -11,7 +11,8 @@ This plugin provides 2 extra ways to embed blocks/pages. Supports auto heading p
 - Auto heading processing for embedded blocks, automatically adjusting the heading size according to the context.
 - Shortcut for using auto heading.
 - Handling for cases where a block cut-and-paste (cut via menu not supported) or backward deletion would cause missing references.
-- Tree structure for "Favorites" and "Recents" based on namespaces and/or tagged pages. You can affect the order of display by writing a `fixed` property on the page you want to adjust, e.g, `fixed:: 100`. Smaller the number, closer to the top it will be.
+- Tree structure for "Favorites" and "Recents" based on namespaces and/or page properties. You can affect the order of display by writing a `fixed` property on the page you want to adjust, e.g, `fixed:: 100`. Smaller the number, closer to the top it will be.
+- Set combination of filters through page property and have them displayed in the tree structure. Please refer the demo video below.
 - Slider to adjust the left sidebar's width.
 - Show page's icon in page references when it's set on the page.
 

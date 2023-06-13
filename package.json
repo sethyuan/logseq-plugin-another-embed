@@ -11,7 +11,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@logseq/libs": "^0.0.14",
+    "@logseq/libs": "^0.0.15",
     "immer": "^9.0.19",
     "logseq-l10n": "^0.2.0",
     "marked": "^4.0.19",

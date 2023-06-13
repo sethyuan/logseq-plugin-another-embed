@@ -132,21 +132,21 @@ export async function queryForSubItems(name) {
 }
 
 async function getQuickFilters(name) {
-  const uuid = (
+  const [{ uuid: blockUUID }, { uuid: pageUUID }] = (
     await logseq.DB.datascriptQuery(
-      `[:find (pull ?b [:block/uuid])
-     :in $ ?name
-     :where
-     [?p :block/name ?name]
-     [?b :block/page ?p]
-     [?b :block/pre-block? true]]`,
+      `[:find (pull ?b [:block/uuid]) (pull ?p [:block/uuid])
+      :in $ ?name
+      :where
+      [?p :block/name ?name]
+      [?b :block/page ?p]
+      [?b :block/pre-block? true]]`,
       `"${name}"`,
     )
-  ).flat()[0]?.uuid
-  if (uuid == null) return []
+  )[0] ?? [{}, {}]
+  if (blockUUID == null || pageUUID == null) return []
 
   const quickFiltersStr = JSON.parse(
-    (await logseq.Editor.getBlockProperty(uuid, "quick-filters")) ?? '""',
+    (await logseq.Editor.getBlockProperty(blockUUID, "quick-filters")) ?? '""',
   )
   if (!quickFiltersStr) return []
 
@@ -170,17 +170,18 @@ async function getQuickFilters(name) {
           filter[tags[0]].properties = { fixed }
         }
       }
-      constructFilter(filter[tags[0]], name, uuid, tags, [])
+      constructFilter(filter[tags[0]], name, blockUUID, pageUUID, tags, [])
       return filter
     }, {})
 
   return Object.values(quickFilters)
 }
 
-function constructFilter(obj, name, uuid, tags, path) {
+function constructFilter(obj, name, blockUUID, pageUUID, tags, path) {
   if (obj.displayName == null) {
     obj.name = name
-    obj.uuid = uuid
+    obj.blockUUID = blockUUID
+    obj.pageUUID = pageUUID
     obj.displayName = tags[0]
     obj.filters = [...path, tags[0]]
   }
@@ -194,5 +195,12 @@ function constructFilter(obj, name, uuid, tags, path) {
   if (obj.subitems[tags[0]] == null) {
     obj.subitems[tags[0]] = {}
   }
-  constructFilter(obj.subitems[tags[0]], name, uuid, tags, obj.filters)
+  constructFilter(
+    obj.subitems[tags[0]],
+    name,
+    blockUUID,
+    pageUUID,
+    tags,
+    obj.filters,
+  )
 }
