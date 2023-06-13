@@ -26,6 +26,8 @@ https://user-images.githubusercontent.com/3410293/220614901-4aa9bb01-414a-4eb2-b
 
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/32b2a19e-19b3-4113-8fee-f2a445d151cc
 
+https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/d586158a-6781-44fd-931b-1eca8c4df780
+
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/d341babd-4898-4558-bb06-04e2e4dc7f10
 
 ## Style Customization
