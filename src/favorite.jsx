@@ -200,22 +200,22 @@ function needsProcessing(txData) {
   const hierarchyProperty = logseq.settings?.hierarchyProperty ?? "tags"
   let oldProperty, newProperty
   let oldQuickFilters, newQuickFilters
-  for (const [_e, attr, val, _tx, removed] of txData) {
+  for (const [_e, attr, val, _tx, added] of txData) {
     if (attr === "originalName") return true
     if (hierarchyProperty === "tags" && attr === "tags") return true
     if (attr === "properties") {
       if (val[hierarchyProperty]) {
-        if (removed) {
-          oldProperty = val[hierarchyProperty]
-        } else {
+        if (added) {
           newProperty = val[hierarchyProperty]
+        } else {
+          oldProperty = val[hierarchyProperty]
         }
       }
       if (val.quickFilters) {
-        if (removed) {
-          oldQuickFilters = val.quickFilters
-        } else {
+        if (added) {
           newQuickFilters = val.quickFilters
+        } else {
+          oldQuickFilters = val.quickFilters
         }
       }
     }
