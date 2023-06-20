@@ -437,29 +437,32 @@ function processEmbeds(embeds) {
     embed.appendChild(controlBar)
 
     if (logseq.settings?.breadcrumb) {
-      embed.style.display = "flex"
-      embed.style.flexDirection = "column"
-      const containing = embed.closest("[id]")
-      const selector = `#${containing.id} [class="${embed.className}"]`
       const embedded = embed.querySelector("[data-embed]")
-      const blockId = embedded.getAttribute("blockid")
-      const key = `kef-ae-${containing.id}`
-      logseq.provideUI({
-        key,
-        path: selector,
-        template: `<div id="${key}" class="kef-ae-breadcrumb breadcrumb block-parents"></div>`,
-        style: {
-          order: -1,
-          paddingBottom:
-            embed.classList.contains("embed-page") &&
-            embed.previousElementSibling?.dataset?.ref === ".embed-children"
-              ? "0.25rem"
-              : 0,
-        },
-      })
-      setTimeout(() => {
-        renderBreadcrumb(embed, blockId, key)
-      }, 0)
+      // whiteboard doesn't have data-embed.
+      if (embedded) {
+        embed.style.display = "flex"
+        embed.style.flexDirection = "column"
+        const containing = embed.closest("[id]")
+        const selector = `#${containing.id} [class="${embed.className}"]`
+        const blockId = embedded.getAttribute("blockid")
+        const key = `kef-ae-${containing.id}`
+        logseq.provideUI({
+          key,
+          path: selector,
+          template: `<div id="${key}" class="kef-ae-breadcrumb breadcrumb block-parents"></div>`,
+          style: {
+            order: -1,
+            paddingBottom:
+              embed.classList.contains("embed-page") &&
+              embed.previousElementSibling?.dataset?.ref === ".embed-children"
+                ? "0.25rem"
+                : 0,
+          },
+        })
+        setTimeout(() => {
+          renderBreadcrumb(embed, blockId, key)
+        }, 0)
+      }
     }
   }
 }
@@ -533,7 +536,7 @@ async function renderBreadcrumb(embed, blockId, elId) {
         ? await logseq.Editor.getPage(block.parent.id)
         : await logseq.Editor.getBlock(block.parent.id)
     path.unshift({
-      label: (await parseContent(block.content)) ?? block.originalName,
+      label: (await parseContent(block.content)) || block.originalName,
       name: block.name,
       uuid: block.uuid,
     })
