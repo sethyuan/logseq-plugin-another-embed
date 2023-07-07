@@ -9,6 +9,7 @@ import zhCN from "./translations/zh-CN.json"
 const HEADING_REGEX = /^#+ /
 
 let pageRefObserver = null
+let tableObserver = null
 
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
@@ -315,6 +316,12 @@ async function main() {
         "Assign a shortcut for toggling block properties display.",
       ),
     },
+    {
+      key: "tableColumnDrag",
+      type: "boolean",
+      default: true,
+      description: t("You can adjust table columns' width if this is enabled."),
+    },
   ])
 
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
@@ -364,7 +371,25 @@ function onSettingsChanged() {
       subtree: true,
       childList: true,
     })
-    processPageRefs(parent.document.getElementById("main-content-container"))
+    processPageRefs(parent.document.getElementById("app-container"))
+  }
+
+  tableObserver?.disconnect()
+  if (logseq.settings?.tableColumnDrag) {
+    tableObserver = new MutationObserver(async (mutationList) => {
+      for (const mutation of mutationList) {
+        for (const node of mutation.addedNodes) {
+          if (node.querySelectorAll) {
+            await processTables(node)
+          }
+        }
+      }
+    })
+    tableObserver.observe(parent.document.body, {
+      subtree: true,
+      childList: true,
+    })
+    processTables(parent.document.getElementById("app-container"))
   }
 }
 
@@ -646,6 +671,33 @@ function togglePropertiesDisplay() {
     appContainer.classList.remove("kef-ae-hide-properties")
   } else {
     appContainer.classList.add("kef-ae-hide-properties")
+  }
+}
+
+async function processTables(node) {
+  const tables = node.querySelectorAll("table.table-auto")
+  for (const table of tables) {
+    const blockUUID = table.closest("[blockid]")?.getAttribute("blockid")
+    if (!blockUUID) return
+    const block = await logseq.Editor.getBlock(blockUUID)
+    if (block == null) return
+    if (block.properties == null) return
+    const keys = Object.keys(block.properties).filter((k) =>
+      k.startsWith("colW"),
+    )
+    if (keys.length === 0) return
+    const colWidths = keys.reduce((obj, k) => {
+      obj[+k.substring(4) - 1] = block.properties[k]
+      return obj
+    }, {})
+
+    table.style.tableLayout = "fixed"
+    const cols = table.querySelectorAll("thead th")
+    cols.forEach((col, i) => {
+      if (colWidths[i]) {
+        col.style.width = colWidths[i]
+      }
+    })
   }
 }
 

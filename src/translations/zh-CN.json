@@ -14,5 +14,6 @@
   "Another Embed: Toggle Breadcrumb": "Another Embed：切换面包屑显示",
   "Toggle Auto Heading": "切换自动标题",
   "Display the block properties by default or not.": "是否默认显示块属性",
-  "Assign a shortcut for toggling block properties display.": "设置一个切换块属性显示与否的快捷键。"
+  "Assign a shortcut for toggling block properties display.": "设置一个切换块属性显示与否的快捷键。",
+  "You can adjust table columns' width if this is enabled.": "开启即可通过拖拽表格列来调整列宽。"
 }
