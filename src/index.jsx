@@ -11,6 +11,11 @@ const HEADING_REGEX = /^#+ /
 let pageRefObserver = null
 let tableObserver = null
 
+let guideline = null
+let col = null
+let guideStart = 0
+let colStart = 0
+
 async function main() {
   await setup({ builtinTranslations: { "zh-CN": zhCN } })
 
@@ -136,8 +141,19 @@ async function main() {
       .kef-ae-show-breadcrumbs .kef-ae-b-segs {
         display: inline;
       }
+
       .kef-ae-hide-properties .block-properties:not(.page-properties) {
         display: none;
+      }
+
+      .kef-ae-table-guide {
+        position: absolute;
+        top: 0;
+        left: -999px;
+        width: 0;
+        border-right: 1px dashed var(--ls-active-primary-color);
+        pointer-events: none;
+        z-index: var(--ls-z-index-level-1);
       }
     `,
   })
@@ -389,6 +405,14 @@ function onSettingsChanged() {
       subtree: true,
       childList: true,
     })
+    guideline = parent.document.querySelector(".kef-ae-table-guide")
+    if (guideline == null) {
+      const guide = parent.document.createElement("div")
+      guide.classList.add("kef-ae-table-guide")
+      guide.style.display = "none"
+      parent.document.body.append(guide)
+      guideline = guide
+    }
     processTables(parent.document.getElementById("app-container"))
   }
 }
@@ -677,6 +701,10 @@ function togglePropertiesDisplay() {
 async function processTables(node) {
   const tables = node.querySelectorAll("table.table-auto")
   for (const table of tables) {
+    table.addEventListener("mousedown", onTableMouseDown)
+    table.addEventListener("mouseup", onTableMouseUp)
+    table.addEventListener("mousemove", onTableMouseMove)
+
     const blockUUID = table.closest("[blockid]")?.getAttribute("blockid")
     if (!blockUUID) return
     const block = await logseq.Editor.getBlock(blockUUID)
@@ -690,7 +718,6 @@ async function processTables(node) {
       obj[+k.substring(4) - 1] = block.properties[k]
       return obj
     }, {})
-
     table.style.tableLayout = "fixed"
     const cols = table.querySelectorAll("thead th")
     cols.forEach((col, i) => {
@@ -698,6 +725,67 @@ async function processTables(node) {
         col.style.width = colWidths[i]
       }
     })
+  }
+}
+
+function onTableMouseDown(e) {
+  if (!e.target.style?.cursor) return
+  if (guideline == null) return
+
+  e.preventDefault()
+  e.stopPropagation()
+
+  col = e.target
+  const table = col.closest("table")
+  const tableRect = table.getBoundingClientRect()
+  const colRect = col.getBoundingClientRect()
+  guideline.style.top = `${tableRect.top}px`
+  guideline.style.height = `${tableRect.height}px`
+  guideline.style.left = `${e.x}px`
+  guideline.style.display = ""
+  guideStart = e.x
+  colStart = colRect.x
+}
+
+async function onTableMouseUp(e) {
+  if (col == null) return
+
+  e.preventDefault()
+  e.stopPropagation()
+
+  try {
+    if (e.x <= colStart) return
+    const blockUUID = col.closest("[blockid]")?.getAttribute("blockid")
+    if (!blockUUID) return
+    const index =
+      Array.prototype.indexOf.call(col.parentElement.children, col) + 1
+    const width = `${col.offsetWidth + (e.x - guideStart)}px`
+    col.style.width = width
+    await logseq.Editor.upsertBlockProperty(blockUUID, `col-w-${index}`, width)
+  } finally {
+    guideline.style.display = "none"
+    guideline.style.left = "-999px"
+    col = null
+  }
+}
+
+function onTableMouseMove(e) {
+  if (col == null) {
+    // not being dragged
+    if (
+      e.target.nodeName === "TH" &&
+      e.target.parentElement?.parentElement?.nodeName === "THEAD" &&
+      e.offsetX >= e.target.offsetWidth - 8 &&
+      e.offsetX <= e.target.offsetWidth
+    ) {
+      e.target.style.cursor = "col-resize"
+    } else if (e.target.style?.cursor) {
+      e.target.style.cursor = ""
+    }
+  } else {
+    // being dragged
+    if (e.x <= colStart) return
+    guideline.style.left = `${e.x}px`
   }
 }
 
