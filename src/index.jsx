@@ -392,6 +392,14 @@ function onSettingsChanged() {
 
   tableObserver?.disconnect()
   if (logseq.settings?.tableColumnDrag) {
+    logseq.provideStyle({
+      key: "kef-ae-table",
+      style: `
+      td.whitespace-nowrap {
+        white-space: initial;
+      }
+      `,
+    })
     tableObserver = new MutationObserver(async (mutationList) => {
       for (const mutation of mutationList) {
         for (const node of mutation.addedNodes) {
