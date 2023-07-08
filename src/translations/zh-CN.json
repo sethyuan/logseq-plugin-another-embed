@@ -1,7 +1,8 @@
 {
   "Enable global alternative embed.": "开启全局备选嵌入。",
-  "Enable auto heading processing.": "开启自动标题处理。",
-  "Assign a shortcut to toggle auto heading.": "设置一个切换自动标题设置的快捷键。",
+  "Enable auto heading processing in embeds.": "开启在嵌入块当中的自动标题处理。",
+  "Assign a shortcut for toggling auto heading.": "设置一个切换自动标题设置的快捷键。",
+  "Assign a shortcut for toggling breadcrumb display.": "设置一个切换面包屑显示与否的快捷键。",
   "Enable deletion helper.": "开启删除辅助。",
   "Enable breadcrumb for embeds.": "开启嵌入块的面包屑功能。",
   "Display the breadcrumb by default or not.": "是否默认显示面包屑。",
@@ -9,5 +10,7 @@
   "Show arrows only when hovered.": "仅在鼠标移上去时显示箭头。",
   "Whether or not to show the page's icon (if any) in a page ref.": "是否在页面引用中显示页面图标（如有）。",
   "It controls which property is used to decide a tag's hierarchy.": "使用哪个属性作为判断标签结构的依据。",
-  "Define an icon for quick filters.": "给快速过滤器设置一个图标。"
+  "Define an icon for quick filters.": "给快速过滤器设置一个图标。",
+  "Another Embed: Toggle Breadcrumb": "Another Embed：切换面包屑显示",
+  "Toggle Auto Heading": "切换自动标题"
 }

@@ -129,18 +129,10 @@ async function main() {
         margin-bottom: -0.25em;
         padding-top: 5px;
       }
-      .kef-ae-b-toggle {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 6px;
-        height: 6px;
-        background: var(--ls-primary-text-color);
-      }
       .kef-ae-b-segs {
         display: none;
       }
-      .kef-ae-b-show {
+      .kef-ae-show-breadcrumbs .kef-ae-b-segs {
         display: inline;
       }
     `,
@@ -156,30 +148,27 @@ async function main() {
     cursorBack(2)
   })
 
-  if (logseq.settings?.autoHeadingShortcut) {
-    logseq.App.registerCommandShortcut(
-      { binding: logseq.settings.autoHeadingShortcut },
-      async () => {
-        const block = await logseq.Editor.getCurrentBlock()
-        if (block != null) {
-          if (block.properties?.heading) {
-            if (HEADING_REGEX.test(block.content)) {
-              const content = `${block.content.replace(
-                HEADING_REGEX,
-                "",
-              )}\nheading:: true`
-              await logseq.Editor.updateBlock(block.uuid, content)
-              await logseq.Editor.exitEditingMode(true)
-            } else {
-              await logseq.Editor.removeBlockProperty(block.uuid, "heading")
-            }
-          } else {
-            await logseq.Editor.upsertBlockProperty(block.uuid, "heading", true)
-          }
-        }
-      },
-    )
-  }
+  logseq.App.registerCommandPalette(
+    {
+      key: "auto-heading",
+      ...(logseq.settings?.autoHeadingShortcut
+        ? { keybinding: { binding: logseq.settings.autoHeadingShortcut } }
+        : {}),
+      label: t("Toggle Auto Heading"),
+    },
+    toggleAutoHeading,
+  )
+
+  logseq.App.registerCommandPalette(
+    {
+      key: "toggle-breadcrumb",
+      ...(logseq.settings?.toggleBreadcrumbShortcut
+        ? { keybinding: { binding: logseq.settings.toggleBreadcrumbShortcut } }
+        : {}),
+      label: t("Another Embed: Toggle Breadcrumb"),
+    },
+    toggleBreadcrumbDisplay,
+  )
 
   const observer = new MutationObserver(async (mutationList) => {
     for (const mutation of mutationList) {
@@ -236,13 +225,13 @@ async function main() {
       key: "autoHeading",
       type: "boolean",
       default: true,
-      description: t("Enable auto heading processing."),
+      description: t("Enable auto heading processing in embeds."),
     },
     {
       key: "autoHeadingShortcut",
       type: "string",
       default: "mod+9",
-      description: t("Assign a shortcut to toggle auto heading."),
+      description: t("Assign a shortcut for toggling auto heading."),
     },
     {
       key: "breadcrumb",
@@ -255,6 +244,12 @@ async function main() {
       type: "boolean",
       default: false,
       description: t("Display the breadcrumb by default or not."),
+    },
+    {
+      key: "toggleBreadcrumbShortcut",
+      type: "string",
+      default: "mod+shift+b",
+      description: t("Assign a shortcut for toggling breadcrumb display."),
     },
     {
       key: "hierarchyProperty",
@@ -312,6 +307,11 @@ async function main() {
 
 function onSettingsChanged() {
   injectGlobalStyles()
+
+  if (logseq.settings?.showBreadcrumbByDefault) {
+    const appContainer = parent.document.getElementById("app-container")
+    appContainer.classList.add("kef-ae-show-breadcrumbs")
+  }
 
   pageRefObserver?.disconnect()
   if (logseq.settings?.showPageRefIcon) {
@@ -545,6 +545,15 @@ async function renderBreadcrumb(embed, blockId, elId) {
   render(<Breadcrumb segments={path} />, root)
 }
 
+function toggleBreadcrumbDisplay() {
+  const appContainer = parent.document.getElementById("app-container")
+  if (appContainer.classList.contains("kef-ae-show-breadcrumbs")) {
+    appContainer.classList.remove("kef-ae-show-breadcrumbs")
+  } else {
+    appContainer.classList.add("kef-ae-show-breadcrumbs")
+  }
+}
+
 async function processPageRefs(node) {
   const pageRefs = Array.from(node.querySelectorAll(".page-ref"))
   if (pageRefs.length === 0) return
@@ -573,6 +582,26 @@ async function processPageRefs(node) {
       }
     }),
   )
+}
+
+async function toggleAutoHeading() {
+  const block = await logseq.Editor.getCurrentBlock()
+  if (block != null) {
+    if (block.properties?.heading) {
+      if (HEADING_REGEX.test(block.content)) {
+        const content = `${block.content.replace(
+          HEADING_REGEX,
+          "",
+        )}\nheading:: true`
+        await logseq.Editor.updateBlock(block.uuid, content)
+        await logseq.Editor.exitEditingMode(true)
+      } else {
+        await logseq.Editor.removeBlockProperty(block.uuid, "heading")
+      }
+    } else {
+      await logseq.Editor.upsertBlockProperty(block.uuid, "heading", true)
+    }
+  }
 }
 
 logseq.ready(main).catch(console.error)

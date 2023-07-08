@@ -1,11 +1,4 @@
-import { useState } from "preact/hooks"
-import { cls } from "reactutils"
-
 export default function Breadcrumb({ segments }) {
-  const [visible, setVisible] = useState(
-    !!logseq.settings?.showBreadcrumbByDefault,
-  )
-
   function goto(e, name, uuid) {
     e.preventDefault()
     e.stopPropagation()
@@ -17,14 +10,9 @@ export default function Breadcrumb({ segments }) {
     }
   }
 
-  function toggleVisibility() {
-    setVisible((v) => !v)
-  }
-
   return (
     <>
-      <a class="kef-ae-b-toggle" onClick={toggleVisibility} />
-      <span class={cls("kef-ae-b-segs", visible && "kef-ae-b-show")}>
+      <span class="kef-ae-b-segs">
         {segments.map(({ label, name, uuid }, i) => (
           <>
             <a
