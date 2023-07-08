@@ -135,6 +135,9 @@ async function main() {
       .kef-ae-show-breadcrumbs .kef-ae-b-segs {
         display: inline;
       }
+      .kef-ae-hide-properties .block-properties:not(.page-properties) {
+        display: none;
+      }
     `,
   })
 
@@ -168,6 +171,17 @@ async function main() {
       label: t("Another Embed: Toggle Breadcrumb"),
     },
     toggleBreadcrumbDisplay,
+  )
+
+  logseq.App.registerCommandPalette(
+    {
+      key: "toggle-properties",
+      ...(logseq.settings?.togglePropertiesShortcut
+        ? { keybinding: { binding: logseq.settings.togglePropertiesShortcut } }
+        : {}),
+      label: t("Another Embed: Toggle Properties"),
+    },
+    togglePropertiesDisplay,
   )
 
   const observer = new MutationObserver(async (mutationList) => {
@@ -248,7 +262,7 @@ async function main() {
     {
       key: "toggleBreadcrumbShortcut",
       type: "string",
-      default: "mod+shift+b",
+      default: "s b",
       description: t("Assign a shortcut for toggling breadcrumb display."),
     },
     {
@@ -287,6 +301,20 @@ async function main() {
         "Whether or not to show the page's icon (if any) in a page ref.",
       ),
     },
+    {
+      key: "showPropertiesByDefault",
+      type: "boolean",
+      default: true,
+      description: t("Display the block properties by default or not."),
+    },
+    {
+      key: "togglePropertiesShortcut",
+      type: "string",
+      default: "s p",
+      description: t(
+        "Assign a shortcut for toggling block properties display.",
+      ),
+    },
   ])
 
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
@@ -311,6 +339,14 @@ function onSettingsChanged() {
   if (logseq.settings?.showBreadcrumbByDefault) {
     const appContainer = parent.document.getElementById("app-container")
     appContainer.classList.add("kef-ae-show-breadcrumbs")
+  }
+
+  if (
+    logseq.settings?.showPropertiesByDefault != null &&
+    !logseq.settings.showPropertiesByDefault
+  ) {
+    const appContainer = parent.document.getElementById("app-container")
+    appContainer.classList.add("kef-ae-hide-properties")
   }
 
   pageRefObserver?.disconnect()
@@ -601,6 +637,15 @@ async function toggleAutoHeading() {
     } else {
       await logseq.Editor.upsertBlockProperty(block.uuid, "heading", true)
     }
+  }
+}
+
+function togglePropertiesDisplay() {
+  const appContainer = parent.document.getElementById("app-container")
+  if (appContainer.classList.contains("kef-ae-hide-properties")) {
+    appContainer.classList.remove("kef-ae-hide-properties")
+  } else {
+    appContainer.classList.add("kef-ae-hide-properties")
   }
 }
 

@@ -12,5 +12,7 @@
   "It controls which property is used to decide a tag's hierarchy.": "使用哪个属性作为判断标签结构的依据。",
   "Define an icon for quick filters.": "给快速过滤器设置一个图标。",
   "Another Embed: Toggle Breadcrumb": "Another Embed：切换面包屑显示",
-  "Toggle Auto Heading": "切换自动标题"
+  "Toggle Auto Heading": "切换自动标题",
+  "Display the block properties by default or not.": "是否默认显示块属性",
+  "Assign a shortcut for toggling block properties display.": "设置一个切换块属性显示与否的快捷键。"
 }
