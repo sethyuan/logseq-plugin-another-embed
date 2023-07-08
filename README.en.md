@@ -10,19 +10,18 @@ This plugin provides 2 extra ways to embed blocks/pages. Supports auto heading p
 - Path breadcrumb for embeds.
 - Auto heading processing for embedded blocks, automatically adjusting the heading size according to the context.
 - Shortcut for using auto heading.
-- Handling for cases where a block cut-and-paste (cut via menu not supported) or backward deletion would cause missing references.
 - Tree structure for "Favorites" and "Recents" based on namespaces and/or page properties. You can affect the order of display by writing a `fixed` property on the page you want to adjust, e.g, `fixed:: 100`. Smaller the number, closer to the top it will be.
 - Set combination of filters through page property and have them displayed in the tree structure. Please refer the demo video below.
 - Slider to adjust the left sidebar's width.
 - Show page's icon in page references when it's set on the page.
+- Command to toggle to displaying of block properties.
+- Drag to adjust table's column width.
 
 The plugin relies heavily on Logseq's DOM structure, so it is version sensitive. The author will try to ensure compatibility with the latest version of Logseq, other versions will not be purposely supported.
 
 ## Usage
 
 https://user-images.githubusercontent.com/3410293/202061912-7a1495ba-09af-4657-9442-c29d6d5abb55.mp4
-
-https://user-images.githubusercontent.com/3410293/220614901-4aa9bb01-414a-4eb2-bd37-5428edc0a4e8.mp4
 
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/32b2a19e-19b3-4113-8fee-f2a445d151cc
 
