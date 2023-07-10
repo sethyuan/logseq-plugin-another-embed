@@ -29,6 +29,8 @@ https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/d586158a-
 
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/d341babd-4898-4558-bb06-04e2e4dc7f10
 
+https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/cb0bf2e5-2bac-4cc6-b2d5-77e9024154df
+
 ## Style Customization
 
 Theme developers can control the embed's control bar's color by setting the `--kef-ae-handle-color` CSS variable. E.g:
