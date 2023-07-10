@@ -155,6 +155,26 @@ async function main() {
         pointer-events: none;
         z-index: var(--ls-z-index-level-1);
       }
+
+      .kef-ae-arrow {
+        position: absolute;
+        top: 12px;
+        left: -15px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 6px 6px 0 6px;
+        border-color: var(--ls-secondary-text-color) transparent transparent transparent;
+        cursor: pointer;
+        border-radius: 4px;
+        opacity: 0;
+      }
+      .embed-header:hover .kef-ae-arrow {
+        opacity: 0.4;
+      }
+      .kef-ae-arrow-collapsed {
+        transform: rotate(-90deg);
+      }
     `,
   })
 
@@ -529,6 +549,19 @@ function processEmbeds(embeds) {
     controlBar.addEventListener("mouseleave", onMouseLeave)
     embed.appendChild(controlBar)
 
+    // inject collapsing arrow
+    if (
+      embed.classList.contains("embed-page") &&
+      embed.querySelector(".kef-ae-arrow") == null
+    ) {
+      const header = embed.querySelector(".embed-header")
+      header.style.position = "relative"
+      const arrow = parent.document.createElement("div")
+      arrow.classList.add("kef-ae-arrow")
+      arrow.addEventListener("click", onArrowClick)
+      header.append(arrow)
+    }
+
     if (logseq.settings?.breadcrumb) {
       const embedded = embed.querySelector("[data-embed]")
       // whiteboard doesn't have data-embed.
@@ -563,16 +596,24 @@ function processEmbeds(embeds) {
 function reverseEmbedsProcessing(embeds) {
   for (const embed of embeds) {
     delete embed.dataset.heading
+
     const blockContentWrapper = embed.closest(".block-content-wrapper")
     if (blockContentWrapper?.previousElementSibling) {
       blockContentWrapper.previousElementSibling.style.display = ""
     }
+
     const controlBar = embed.querySelector(".kef-ae-control-bar")
     if (controlBar) {
       controlBar.removeEventListener("mouseenter", onMouseEnter)
       controlBar.removeEventListener("mouseleave", onMouseLeave)
       controlBar.removeEventListener("click", onClick)
       controlBar.remove()
+    }
+
+    const arrow = embed.querySelector(".kef-ae-arrow")
+    if (arrow) {
+      arrow.removeEventListener("click", onArrowClick)
+      arrow.remove()
     }
   }
 }
@@ -599,6 +640,21 @@ function onMouseEnter(e) {
 
 function onMouseLeave(e) {
   e.target.style.opacity = null
+}
+
+function onArrowClick(e) {
+  const arrow = e.target
+  const blocksContainer =
+    arrow.parentElement.parentElement.querySelector(".blocks-container")
+  if (blocksContainer == null) return
+  const collapsed = arrow.classList.contains("kef-ae-arrow-collapsed")
+  if (collapsed) {
+    arrow.classList.remove("kef-ae-arrow-collapsed")
+    blocksContainer.style.display = "block"
+  } else {
+    arrow.classList.add("kef-ae-arrow-collapsed")
+    blocksContainer.style.display = "none"
+  }
 }
 
 async function renderBreadcrumb(embed, blockId, elId) {
