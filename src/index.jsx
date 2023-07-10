@@ -158,21 +158,30 @@ async function main() {
 
       .kef-ae-arrow {
         position: absolute;
-        top: 12px;
-        left: -15px;
+        top: 0;
+        left: -18px;
+        padding-right: 10px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        opacity: 0;
+      }
+      .kef-ae-arrow::before {
+        display: block;
+        content: "";
         width: 0;
         height: 0;
         border-style: solid;
         border-width: 6px 6px 0 6px;
         border-color: var(--ls-secondary-text-color) transparent transparent transparent;
-        cursor: pointer;
         border-radius: 4px;
-        opacity: 0;
+        transition: transform 0.1s ease-in-out;
       }
       .embed-header:hover .kef-ae-arrow {
         opacity: 0.4;
       }
-      .kef-ae-arrow-collapsed {
+      .kef-ae-arrow-collapsed::before {
         transform: rotate(-90deg);
       }
     `,
