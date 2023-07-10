@@ -707,7 +707,7 @@ function togglePropertiesDisplay() {
 }
 
 async function processTables(node) {
-  const tables = node.querySelectorAll("table.table-auto")
+  const tables = node.querySelectorAll("table.table-auto:not(.table-condensed)")
   for (const table of tables) {
     table.style.tableLayout = "fixed"
     table.addEventListener("pointerdown", onTablePointerDown)
