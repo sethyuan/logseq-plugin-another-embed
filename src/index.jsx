@@ -709,9 +709,10 @@ function togglePropertiesDisplay() {
 async function processTables(node) {
   const tables = node.querySelectorAll("table.table-auto")
   for (const table of tables) {
-    table.addEventListener("mousedown", onTableMouseDown)
-    table.addEventListener("mouseup", onTableMouseUp)
-    table.addEventListener("mousemove", onTableMouseMove)
+    table.style.tableLayout = "fixed"
+    table.addEventListener("pointerdown", onTablePointerDown)
+    table.addEventListener("pointerup", onTablePointerUp)
+    table.addEventListener("pointermove", onTablePointerMove)
 
     const blockUUID = table.closest("[blockid]")?.getAttribute("blockid")
     if (!blockUUID) return
@@ -726,7 +727,6 @@ async function processTables(node) {
       obj[+k.substring(4) - 1] = block.properties[k]
       return obj
     }, {})
-    table.style.tableLayout = "fixed"
     const cols = table.querySelectorAll("thead th")
     cols.forEach((col, i) => {
       if (colWidths[i]) {
@@ -736,7 +736,7 @@ async function processTables(node) {
   }
 }
 
-function onTableMouseDown(e) {
+function onTablePointerDown(e) {
   if (!e.target.style?.cursor) return
   if (guideline == null) return
 
@@ -753,13 +753,15 @@ function onTableMouseDown(e) {
   guideline.style.display = ""
   guideStart = e.x
   colStart = colRect.x
+  col.setPointerCapture(e.pointerId)
 }
 
-async function onTableMouseUp(e) {
+async function onTablePointerUp(e) {
   if (col == null) return
 
   e.preventDefault()
   e.stopPropagation()
+  col.releasePointerCapture(e.pointerId)
 
   try {
     if (e.x <= colStart) return
@@ -767,7 +769,7 @@ async function onTableMouseUp(e) {
     if (!blockUUID) return
     const index =
       Array.prototype.indexOf.call(col.parentElement.children, col) + 1
-    const width = `${col.offsetWidth + (e.x - guideStart)}px`
+    const width = `${~~(col.offsetWidth + (e.x - guideStart))}px`
     col.style.width = width
     await logseq.Editor.upsertBlockProperty(blockUUID, `col-w-${index}`, width)
   } finally {
@@ -777,12 +779,17 @@ async function onTableMouseUp(e) {
   }
 }
 
-function onTableMouseMove(e) {
+function onTablePointerMove(e) {
   if (col == null) {
     // not being dragged
     if (
-      e.target.nodeName === "TH" &&
-      e.target.parentElement?.parentElement?.nodeName === "THEAD" &&
+      !(
+        e.target.nodeName === "TH" &&
+        e.target.parentElement?.parentElement?.nodeName === "THEAD"
+      )
+    )
+      return
+    if (
       e.offsetX >= e.target.offsetWidth - 8 &&
       e.offsetX <= e.target.offsetWidth
     ) {
