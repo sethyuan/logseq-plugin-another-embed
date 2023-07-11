@@ -15,7 +15,7 @@ This plugin provides 2 extra ways to embed blocks/pages. Supports auto heading p
 - Slider to adjust the left sidebar's width.
 - Show page's icon in page references when it's set on the page.
 - Command to toggle to displaying of block properties.
-- Drag to adjust table's column width.
+- Drag to adjust table's column width (v2 tables not supported).
 
 The plugin relies heavily on Logseq's DOM structure, so it is version sensitive. The author will try to ensure compatibility with the latest version of Logseq, other versions will not be purposely supported.
 
