@@ -145,9 +145,16 @@ async function getQuickFilters(name) {
   )[0] ?? [{}, {}]
   if (blockUUID == null || pageUUID == null) return []
 
-  const quickFiltersStr = JSON.parse(
-    (await logseq.Editor.getBlockProperty(blockUUID, "quick-filters")) ?? '""',
-  )
+  let quickFiltersStr
+  try {
+    quickFiltersStr = JSON.parse(
+      (await logseq.Editor.getBlockProperty(blockUUID, "quick-filters")) ??
+        '""',
+    )
+  } catch (err) {
+    console.error(err)
+    return []
+  }
   if (!quickFiltersStr) return []
 
   const groups = quickFiltersStr.match(/(?:\d+\s+)?(?:\[\[[^\]]+\]\]\s*)+/g)

@@ -340,6 +340,14 @@ async function main() {
       ),
     },
     {
+      key: "sortingLocale",
+      type: "string",
+      default: "",
+      description: t(
+        "Locale used in sorting hierarchical favorites. E.g, zh-CN. Keep it empty to use Logseq's language setting.",
+      ),
+    },
+    {
       key: "showPageRefIcon",
       type: "boolean",
       default: true,
@@ -372,7 +380,7 @@ async function main() {
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
 
   const { preferredLanguage: lang } = await logseq.App.getUserConfigs()
-  setLanguage(lang)
+  setLanguage(logseq.settings?.sortingLocale || lang)
   const favoriteOff = await favoriteHelper()
 
   logseq.beforeunload(() => {

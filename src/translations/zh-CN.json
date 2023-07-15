@@ -15,5 +15,6 @@
   "Toggle Auto Heading": "切换自动标题",
   "Display the block properties by default or not.": "是否默认显示块属性",
   "Assign a shortcut for toggling block properties display.": "设置一个切换块属性显示与否的快捷键。",
-  "You can adjust table columns' width if this is enabled.": "开启即可通过拖拽表格列来调整列宽。"
+  "You can adjust table columns' width if this is enabled.": "开启即可通过拖拽表格列来调整列宽。",
+  "Locale used in sorting hierarchical favorites. E.g, zh-CN. Keep it empty to use Logseq's language setting.": "在结构化收藏排序中所使用到的locale。例如 zh-CN。留空会使用Logseq的语言设置。"
 }
