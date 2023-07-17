@@ -19,9 +19,8 @@ export default function Breadcrumb({ segments }) {
               key={uuid}
               className="kef-ae-b-label"
               onClick={(e) => goto(e, name, uuid)}
-            >
-              {label}
-            </a>
+              dangerouslySetInnerHTML={{ __html: label }}
+            ></a>
             {i + 1 < segments.length && (
               <span class="kef-ae-b-spacer mx-2 opacity-50">➤</span>
             )}
