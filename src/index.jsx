@@ -2,8 +2,7 @@ import "@logseq/libs"
 import { setup, t } from "logseq-l10n"
 import { render } from "preact"
 import Breadcrumb from "./comps/Breadcrumb"
-import { load as favoriteHelper } from "./favorite"
-import { parseContent, setLanguage } from "./libs/utils"
+import { parseContent } from "./libs/utils"
 import zhCN from "./translations/zh-CN.json"
 
 const HEADING_REGEX = /^#+ /
@@ -312,42 +311,6 @@ async function main() {
       description: t("Assign a shortcut for toggling breadcrumb display."),
     },
     {
-      key: "hierarchyProperty",
-      type: "string",
-      default: "tags",
-      description: t(
-        "It controls which property is used to decide a tag's hierarchy.",
-      ),
-    },
-    {
-      key: "filterIcon",
-      type: "string",
-      default: "🔍",
-      description: t("Define an icon for quick filters."),
-    },
-    {
-      key: "hoverArrow",
-      type: "boolean",
-      default: false,
-      description: t("Show arrows only when hovered."),
-    },
-    {
-      key: "taggedPageLimit",
-      type: "number",
-      default: 30,
-      description: t(
-        "Maximum number of tagged pages to display on each level for favorites.",
-      ),
-    },
-    {
-      key: "sortingLocale",
-      type: "string",
-      default: "",
-      description: t(
-        "Locale used in sorting hierarchical favorites. E.g, zh-CN. Keep it empty to use Logseq's language setting.",
-      ),
-    },
-    {
       key: "showPageRefIcon",
       type: "boolean",
       default: true,
@@ -379,12 +342,7 @@ async function main() {
 
   const settingsOff = logseq.onSettingsChanged(onSettingsChanged)
 
-  const { preferredLanguage: lang } = await logseq.App.getUserConfigs()
-  setLanguage(logseq.settings?.sortingLocale || lang)
-  const favoriteOff = await favoriteHelper()
-
   logseq.beforeunload(() => {
-    favoriteOff?.()
     settingsOff()
     pageRefObserver?.disconnect()
     observer.disconnect()

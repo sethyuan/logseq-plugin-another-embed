@@ -292,11 +292,6 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-immer@^9.0.19:
-  version "9.0.19"
-  resolved "https://registry.npmmirror.com/immer/-/immer-9.0.19.tgz#67fb97310555690b5f9cd8380d38fc0aabb6b38b"
-  integrity sha512-eY+Y0qcsB4TZKwgQzLaE/lqYMlKhv5J9dyd2RhhtGhNo2njPXDqU9XPfcNfa3MIDsdtZt5KlkIsirlo4dHsWdQ==
-
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.npmmirror.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -437,16 +432,6 @@ process@^0.11.1:
   version "0.11.10"
   resolved "https://registry.npmmirror.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
   integrity sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==
-
-rambdax@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.npmmirror.com/rambdax/-/rambdax-9.0.0.tgz#503c75fbb83f8141ef04af00508fac0433615fc0"
-  integrity sha512-8vcixAlXoFNdCoa35nDzLqntyimVMiQpWUhQgMkOb/pdxZULN+8d9l2kosEQ6Aq0awpI2m+u973cSlg2UrAbyw==
-
-reactutils@^5.12.0:
-  version "5.12.0"
-  resolved "https://registry.npmmirror.com/reactutils/-/reactutils-5.12.0.tgz#a21076df60e4e46ff69b44d2ea2ceaa2cab428e2"
-  integrity sha512-B4YWL7051GTibMjZ6QDKxT5L1yvxnxLK4P+PaoKwWNMUk0pcmCAs5BVK6z9ywmGumQ10Q0wCypmKdfwguEK25g==
 
 resolve@^1.19.0:
   version "1.22.1"

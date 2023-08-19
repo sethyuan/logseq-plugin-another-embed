@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-another-embed",
-  "version": "0.16.2",
+  "version": "0.17.0",
   "main": "dist/index.html",
   "logseq": {
     "id": "_sethyuan-logseq-another-embed",
@@ -12,12 +12,9 @@
   },
   "dependencies": {
     "@logseq/libs": "^0.0.15",
-    "immer": "^9.0.19",
     "logseq-l10n": "^0.2.0",
     "marked": "^4.0.19",
-    "preact": "^10.12.1",
-    "rambdax": "^9.0.0",
-    "reactutils": "^5.12.0"
+    "preact": "^10.12.1"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^4.0.3",
