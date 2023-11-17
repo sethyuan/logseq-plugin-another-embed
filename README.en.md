@@ -23,6 +23,7 @@ https://user-images.githubusercontent.com/3410293/202061912-7a1495ba-09af-4657-9
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/d341babd-4898-4558-bb06-04e2e4dc7f10
 
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/cb0bf2e5-2bac-4cc6-b2d5-77e9024154df
+
 To disable displaying of `col-w-?` properties use `config.edn`:
 ```clojure
 :block-hidden-properties #{:col-w-1 :col-w-2 :col-w-3 :col-w-4 :col-w-5 :col-w-6 :col-w-7 :col-w-8 :col-w-9}
