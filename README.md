@@ -24,6 +24,12 @@ https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/d341babd-
 
 https://github.com/sethyuan/logseq-plugin-another-embed/assets/3410293/cb0bf2e5-2bac-4cc6-b2d5-77e9024154df
 
+如果想要隐藏 `col-w-?` 属性可以在 `config.edn` 中进行配置：
+
+```clojure
+:block-hidden-properties #{:col-w-1 :col-w-2 :col-w-3 :col-w-4 :col-w-5 :col-w-6 :col-w-7 :col-w-8 :col-w-9}
+```
+
 ## 自定义样式
 
 主题开发者可通过设置 `--kef-ae-handle-color` CSS 变量来控制嵌入块控制条的颜色。例如：
