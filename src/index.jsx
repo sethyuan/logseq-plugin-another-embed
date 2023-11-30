@@ -198,17 +198,6 @@ async function main() {
 
   logseq.App.registerCommandPalette(
     {
-      key: "auto-heading",
-      ...(logseq.settings?.autoHeadingShortcut
-        ? { keybinding: { binding: logseq.settings.autoHeadingShortcut } }
-        : {}),
-      label: t("Toggle Auto Heading"),
-    },
-    toggleAutoHeading,
-  )
-
-  logseq.App.registerCommandPalette(
-    {
       key: "toggle-breadcrumb",
       ...(logseq.settings?.toggleBreadcrumbShortcut
         ? { keybinding: { binding: logseq.settings.toggleBreadcrumbShortcut } }
@@ -285,12 +274,6 @@ async function main() {
       type: "boolean",
       default: true,
       description: t("Enable auto heading processing in embeds."),
-    },
-    {
-      key: "autoHeadingShortcut",
-      type: "string",
-      default: "mod+9",
-      description: t("Assign a shortcut for toggling auto heading."),
     },
     {
       key: "breadcrumb",
@@ -706,26 +689,6 @@ async function processPageRefs(node) {
       }
     }),
   )
-}
-
-async function toggleAutoHeading() {
-  const block = await logseq.Editor.getCurrentBlock()
-  if (block != null) {
-    if (block.properties?.heading) {
-      if (HEADING_REGEX.test(block.content)) {
-        const content = `${block.content.replace(
-          HEADING_REGEX,
-          "",
-        )}\nheading:: true`
-        await logseq.Editor.updateBlock(block.uuid, content)
-        await logseq.Editor.exitEditingMode(true)
-      } else {
-        await logseq.Editor.removeBlockProperty(block.uuid, "heading")
-      }
-    } else {
-      await logseq.Editor.upsertBlockProperty(block.uuid, "heading", true)
-    }
-  }
 }
 
 function togglePropertiesDisplay() {
