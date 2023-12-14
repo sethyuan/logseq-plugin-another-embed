@@ -414,15 +414,12 @@ function injectGlobalStyles() {
         }
         .embed-page {
           position: relative;
-          padding-left: 0 !important;
+          padding-left: 20px !important;
           padding-right: 0 !important;
           padding-top: 0 !important;
           padding-bottom: 0 !important;
           margin-top: 0 !important;
           margin-bottom: 0 !important;
-        }
-        .embed-page {
-          padding-left: 29px !important;
         }
         .embed-block {
           position: relative;
