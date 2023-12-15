@@ -414,12 +414,16 @@ function injectGlobalStyles() {
         }
         .embed-page {
           position: relative;
-          padding-left: 20px !important;
+          padding-left: 29px !important;
           padding-right: 0 !important;
           padding-top: 0 !important;
           padding-bottom: 0 !important;
           margin-top: 0 !important;
           margin-bottom: 0 !important;
+        }
+        .embed-page > .embed-header {
+          padding-left: 0;
+          padding-right: 0;
         }
         .embed-block {
           position: relative;
