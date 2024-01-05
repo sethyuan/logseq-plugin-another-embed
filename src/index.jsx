@@ -493,32 +493,39 @@ function processEmbeds(embeds) {
       }
     }
 
-    const blockContentWrapper = embed.closest(".block-content-wrapper")
-    if (blockContentWrapper) {
-      blockContentWrapper.style.width = "100%"
-      if (blockContentWrapper.previousElementSibling) {
-        blockContentWrapper.previousElementSibling.style.display = "none"
-      }
-    }
-
-    const controlBar = parent.document.createElement("div")
-    controlBar.classList.add("kef-ae-control-bar")
-    controlBar.addEventListener("click", onClick)
-    controlBar.addEventListener("mouseenter", onMouseEnter)
-    controlBar.addEventListener("mouseleave", onMouseLeave)
-    embed.appendChild(controlBar)
-
-    // inject collapsing arrow
+    const container = embed.parentElement?.parentElement
+    // Container is a block and not a property nor query table.
     if (
-      embed.classList.contains("embed-page") &&
-      embed.querySelector(".kef-ae-arrow") == null
+      container?.tagName === "DIV" &&
+      container?.classList.contains("flex-1")
     ) {
-      const header = embed.querySelector(".embed-header")
-      header.style.position = "relative"
-      const arrow = parent.document.createElement("div")
-      arrow.classList.add("kef-ae-arrow")
-      arrow.addEventListener("click", onArrowClick)
-      header.append(arrow)
+      const blockContentWrapper = embed.closest(".block-content-wrapper")
+      if (blockContentWrapper) {
+        blockContentWrapper.style.width = "100%"
+        if (blockContentWrapper.previousElementSibling) {
+          blockContentWrapper.previousElementSibling.style.display = "none"
+        }
+      }
+
+      const controlBar = parent.document.createElement("div")
+      controlBar.classList.add("kef-ae-control-bar")
+      controlBar.addEventListener("click", onClick)
+      controlBar.addEventListener("mouseenter", onMouseEnter)
+      controlBar.addEventListener("mouseleave", onMouseLeave)
+      embed.appendChild(controlBar)
+
+      // inject collapsing arrow
+      if (
+        embed.classList.contains("embed-page") &&
+        embed.querySelector(".kef-ae-arrow") == null
+      ) {
+        const header = embed.querySelector(".embed-header")
+        header.style.position = "relative"
+        const arrow = parent.document.createElement("div")
+        arrow.classList.add("kef-ae-arrow")
+        arrow.addEventListener("click", onArrowClick)
+        header.append(arrow)
+      }
     }
 
     if (logseq.settings?.breadcrumb) {
