@@ -57,4 +57,4 @@ The font size of each heading level can be set with the following CSS variables:
 
 If you think the software I have developed is helpful to you and would like to give recognition and support, you may buy me a coffee using following link. Thank you for your support and attention.
 
-<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Me on Ko-fi', '#1b97d1', 'R5R213X8MC');kofiwidget2.draw();</script>
+<a href='https://ko-fi.com/R5R213X8MC' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
